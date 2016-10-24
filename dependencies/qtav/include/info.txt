@@ -1,0 +1,1 @@
+Dump include files for qtav. Expected folders are QtAV and QtAVWidgets
