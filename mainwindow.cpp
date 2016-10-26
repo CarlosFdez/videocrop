@@ -63,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->togglePlayButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->speedDecreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->speedIncreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+    ui->trimLeftButton->setText("[");
+    ui->splitMiddleButton->setText("|");
+    ui->trimRightButton->setText("]");
 
     // wire up events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
@@ -115,6 +118,20 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
     default:
         QMainWindow::keyPressEvent(evt);
     }
+}
+
+void MainWindow::syncRangesToText()
+{
+    ui->rangeInput->property("plainText").toString();
+    QString newText = "";
+    for (pair<qint64, qint64> range : ranges)
+    {
+        QString first = millisecondsToTimestamp(range.first, false);
+        QString second = millisecondsToTimestamp(range.second, false);
+        newText += first + "," + second + "\n";
+    }
+    qDebug() << newText;
+    ui->rangeInput->setPlainText(newText);
 }
 
 void MainWindow::openFile(const QString& filename)
@@ -298,4 +315,69 @@ void MainWindow::on_speedIncreaseButton_clicked()
     qreal newSpeed = videoPlayer->speed() + 0.5;
     newSpeed = min(newSpeed, 6.0);
     videoPlayer->setSpeed(newSpeed);
+}
+
+void MainWindow::on_trimLeftButton_clicked()
+{
+    // todo: replace with something that also can extend the range into empty space
+    // helper function that gets current intersection or before would help
+    qint64 position = videoPlayer->position();
+    for (pair<qint64, qint64> &range : ranges)
+    {
+        if (range.first < position && range.second > position)
+            range.first = position;
+    }
+
+    // if we're after all ranges, then create a new one at the end
+    if (ranges.empty() || ranges.back().second < position)
+    {
+        ranges.push_back(pair<qint64, qint64>(position, videoPlayer->duration()));
+    }
+
+    syncRangesToText();
+    qDebug() << "performed trim left";
+}
+
+void MainWindow::on_splitMiddleButton_clicked()
+{
+    vector<pair<qint64, qint64>> oldRanges = ranges;
+    ranges.clear();
+
+    qint64 position = videoPlayer->position();
+    for (pair<qint64, qint64> &range : oldRanges)
+    {
+        if (range.first < position && range.second > position)
+        {
+            ranges.push_back(pair<qint64, qint64>(range.first, position));
+            ranges.push_back(pair<qint64, qint64>(position, range.second));
+        }
+        else
+        {
+            ranges.push_back(range);
+        }
+    }
+
+    syncRangesToText();
+    qDebug() << "performed split";
+}
+
+void MainWindow::on_trimRightButton_clicked()
+{
+    // todo: replace with something that also can extend the range into empty space
+    // helper function that gets current intersection or before would help
+    qint64 position = videoPlayer->position();
+    for (pair<qint64, qint64> &range : ranges)
+    {
+        if (range.first < position && range.second > position)
+            range.second = position;
+    }
+
+    // if we're before all ranges, then create a new one at the start
+    if (ranges.empty() || ranges.front().first > position)
+    {
+        ranges.insert(ranges.begin(), pair<qint64, qint64>(0, position));
+    }
+
+    syncRangesToText();
+    qDebug() << "performed trim right";
 }

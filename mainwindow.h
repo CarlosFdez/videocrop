@@ -32,6 +32,8 @@ protected:
     void dropEvent(QDropEvent *evt);
     virtual void keyPressEvent(QKeyEvent *);
 
+    virtual void syncRangesToText();
+
 private slots:
     void on_playerLoaded();
     void on_playerPositionChanged(qint64 position);
@@ -51,6 +53,12 @@ private slots:
     void on_speedDecreaseButton_clicked();
 
     void on_speedIncreaseButton_clicked();
+
+    void on_trimLeftButton_clicked();
+
+    void on_splitMiddleButton_clicked();
+
+    void on_trimRightButton_clicked();
 
 private:
     Ui::MainWindow *ui;

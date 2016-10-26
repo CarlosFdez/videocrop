@@ -29,6 +29,11 @@
 	min-width: 140px;
 	max-width: 140px;
 }
+
+#statusBar QToolButton {
+	width: 16px;
+	height: 16px;
+}
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -139,6 +144,45 @@
            </item>
            <item>
             <widget class="QToolButton" name="speedIncreaseButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="trimLeftButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="splitMiddleButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="trimRightButton">
              <property name="enabled">
               <bool>true</bool>
              </property>
