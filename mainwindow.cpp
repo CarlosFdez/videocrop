@@ -16,6 +16,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <math.h>
+#include <QtAV_Global.h>
 
 #include <util.h>
 #include <videoexportprocessor.h>
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     videoPlayer = make_shared<QtAV::AVPlayer>();
     videoPlayer->setRenderer(videoOutput.get());
     videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
+    videoPlayer->setMediaEndAction(QtAV::MediaEndActionFlag::MediaEndAction_Pause);
 
     // set seek bar
     seekbar = new VideoSeekBar();
@@ -174,7 +176,6 @@ void MainWindow::on_playerPositionChanged(qint64 position)
 
 void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
 {
-    qDebug() << "event: state changed" << state << videoPlayer->isPlaying();
     QIcon playIcon;
 
     if (state == QtAV::AVPlayer::State::PlayingState)
@@ -246,10 +247,10 @@ void MainWindow::on_exportButton_clicked()
         return;
     }
 
-    qDebug() << "selected output filename " << outputFilename;
-
     if (!outputFilename.toLower().endsWith(".mp4"))
         outputFilename += ".mp4";
+
+    qDebug() << "output filename " << outputFilename;
 
     exportProcessor.setFilename(this->filename);
     for (pair<qint64, qint64> range : ranges)
@@ -272,7 +273,7 @@ void MainWindow::on_exportButton_clicked()
     exportDialog->setSizeGripEnabled(false);
     exportDialog->setWindowModality(Qt::WindowModal);
     exportDialog->setLabelText("Exporting files...");
-    exportDialog->setRange(0, ranges.size() * 100);
+    exportDialog->setRange(0, 100);
     connect(exportDialog.get(), SIGNAL(canceled()), SLOT(on_exportCancelled()));
 
     exportDialog->open();

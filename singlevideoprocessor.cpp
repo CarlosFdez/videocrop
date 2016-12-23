@@ -32,6 +32,7 @@ void SingleVideoProcessor::process(
     QStringList arguments;
     arguments << "-ss" << startStr;
     arguments << "-i" << inputFile;
+    arguments << "-avoid_negative_ts" << "make_zero";
     arguments << "-t" << durationStr;
     arguments << "-map" << "0";
     arguments << "-codec" << "copy";

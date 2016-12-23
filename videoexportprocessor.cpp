@@ -4,6 +4,7 @@
 #include <QString>
 #include <QProcess>
 #include <vector>
+#include <math.h>
 
 #include "util.h"
 
@@ -36,9 +37,12 @@ vector<QString> VideoExportProcessor::getFilenames(const QString &exportPath)
         QString basePath = exportPath.left(extPosition);
         QString extension = exportPath.right(exportPath.size() - extPosition);
 
+        qDebug() << "Export Base Path " << basePath;
+        qDebug() << "Export Extension " << extension;
+
         for (int i = 0; i < ranges.size(); i++)
         {
-            auto path = QString("%1-%2.%3").arg(basePath).arg(i).arg(extension);
+            auto path = QString("%1-%2%3").arg(basePath).arg(i).arg(extension);
             results.push_back(path);
         }
     }
@@ -101,11 +105,11 @@ void VideoExportProcessor::on_itemProgress(int itemProgress)
         return;
     }
 
+    double completedProgress = (processedDuration * 1.0 / totalDuration) * 100;
     qint64 currentDuration = ranges[currentItem].second - ranges[currentItem].first;
     double currentWeight = currentDuration * 1.0 / totalDuration;
-    double completedProgress = (processedDuration * 1.0 / totalDuration) * 100;
 
-    int totalProgress = floor(completedProgress + (itemProgress * currentWeight));
+    int totalProgress = round(completedProgress + (itemProgress * currentWeight));
 
     emit progress(totalProgress);
 }
