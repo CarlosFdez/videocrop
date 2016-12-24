@@ -43,3 +43,6 @@ Debug:LIBS += -L$$PWD/dependencies/qtav/lib -lQt5AVWidgetsd -lQt5AVd
 
 DISTFILES += \
     Readme.md
+
+RESOURCES += \
+    images.qrc

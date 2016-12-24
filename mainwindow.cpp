@@ -14,6 +14,7 @@
 #include <QProgressDialog>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QIcon>
 #include <QDir>
 #include <math.h>
 #include <QtAV_Global.h>
@@ -62,12 +63,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->rangeInput->installEventFilter(this);
 
     // default icon states
-    ui->togglePlayButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    ui->togglePlayButton->setIcon(QIcon(":/images/play.png"));
     ui->speedDecreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->speedIncreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-    ui->trimLeftButton->setText("[");
-    ui->splitMiddleButton->setText("|");
-    ui->trimRightButton->setText("]");
 
     // wire up events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
@@ -179,9 +177,9 @@ void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
     QIcon playIcon;
 
     if (state == QtAV::AVPlayer::State::PlayingState)
-        playIcon = style()->standardIcon(QStyle::SP_MediaPause);
+        playIcon = QIcon(":/images/pause.png");
     else
-        playIcon = style()->standardIcon(QStyle::SP_MediaPlay);
+        playIcon = QIcon(":/images/play.png");
     ui->togglePlayButton->setIcon(playIcon);
 }
 
