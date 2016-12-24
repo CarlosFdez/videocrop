@@ -18,6 +18,9 @@ namespace Ui {
 class MainWindow;
 }
 
+/**
+ * @brief The main window for the application
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -25,14 +28,21 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    /// Programmatically opens a video file
     void openFile(const QString& filename);
+
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *evt);
     virtual void keyPressEvent(QKeyEvent *);
 
+    /// Internal function to update the textfield based on the range collection
     virtual void syncRangesToText();
+
+    /// Gets the idx of the region containing position, or the one before
+    int getRegionAtOrBeforeIdx(qint64 position);
 
 private slots:
     void on_playerLoaded();

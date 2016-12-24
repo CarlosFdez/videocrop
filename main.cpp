@@ -14,22 +14,9 @@
 using namespace std;
 using namespace QtAV;
 
-//extern "C" {
-//    #include <libavcodec/avcodec.h>
-//    #include <libavformat/avformat.h>
-//    #include <libswscale/swscale.h>
-//}
-
-//shared_ptr<AVFormatContext> load_context(const string& filename)
-//{
-//    AVFormatContext *pFormatCtx = nullptr;
-
-//    if (avformat_open_input(&pFormatCtx, filename.c_str(), nullptr, nullptr) < 0)
-//        throw "could not open file";
-
-//    return shared_ptr<AVFormatContext>(pFormatCtx, avformat_free_context);
-//}
-
+/*
+ * Defines a Qt Application. Created to implement global error catching.
+ */
 class VideoCropApplication : public QApplication
 {
 public:
@@ -53,21 +40,9 @@ int main(int argc, char *argv[])
 {
     try
     {
-        //av_register_all();
         QtAV::Widgets::registerRenderers();
 
         VideoCropApplication a(argc, argv);
-
-
-//        QString pluginPath = "C:\\bin\\plugins";
-//        VlcCommon::setPluginPath(pluginPath);
-
-//        string filePath = "F:\\Videos\\OBS\\dark souls 2\\output\\mcduff.mp4";
-//        shared_ptr<AVFormatContext> ctx = load_context(filePath);
-//        cout << "filename" << ctx->filename << endl;
-//        cout << "start time" << ctx->start_time << endl;
-//        cout << "duration" << ctx->duration << endl;
-//        cout << "num tracks" << ctx->nb_streams << endl;
 
         MainWindow w;
         w.show();
@@ -78,12 +53,12 @@ int main(int argc, char *argv[])
         }
         catch (...)
         {
-            qDebug() << "Unknown exception";
+            qDebug() << "Unknown exception while executing application";
         }
     }
     catch (...)
     {
-        cerr << "Unknown exception";
+        cerr << "Unknown exception while setting up application";
         return -1;
     }
 }

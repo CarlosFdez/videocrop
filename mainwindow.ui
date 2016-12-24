@@ -15,19 +15,20 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#rightSide {
-	min-width: 140px;
-	max-width: 140px;
+	min-width: 150px;
+	max-width: 150px;
 	padding: 0 4px;
 }
 
 #rangeInput {
-	min-width: 140px;
-	max-width: 140px;
+	min-width: 150px;
+	max-width: 150px;
+	font-size: 0.8em;
 }
 
 #exportButton {
-	min-width: 140px;
-	max-width: 140px;
+	min-width: 150px;
+	max-width: 150px;
 }
 
 #statusBar QToolButton {
@@ -244,13 +245,13 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>148</width>
+        <width>158</width>
         <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>148</width>
+        <width>158</width>
         <height>16777215</height>
        </size>
       </property>
@@ -293,7 +294,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>142</width>
+           <width>152</width>
            <height>0</height>
           </size>
          </property>
