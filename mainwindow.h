@@ -32,6 +32,8 @@ public:
     /// Programmatically opens a video file
     void openFile(const QString& filename);
 
+    /// Programmatically closes any open videos
+    void close();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -53,13 +55,6 @@ private slots:
 
     void on_rangeInput_textChanged();
 
-    void on_exportButton_clicked();
-
-    void on_exportCancelled();
-    void on_exportedItem(int item);
-    void on_exportFinished();
-    void on_exportProgress(int progress);
-
     void on_speedDecreaseButton_clicked();
 
     void on_speedIncreaseButton_clicked();
@@ -69,6 +64,14 @@ private slots:
     void on_splitMiddleButton_clicked();
 
     void on_trimRightButton_clicked();
+
+    void on_unloadButton_clicked();
+    void on_exportButton_clicked();
+
+    void on_exportCancelled();
+    void on_exportedItem(int item);
+    void on_exportFinished();
+    void on_exportProgress(int progress);
 
 private:
     Ui::MainWindow *ui;

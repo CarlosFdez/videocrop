@@ -146,6 +146,18 @@ void MainWindow::openFile(const QString& filename)
     videoPlayer->load();
 }
 
+void MainWindow::close()
+{
+    if (videoPlayer->isPlaying())
+        videoPlayer->stop();
+
+    this->filename = QString();
+    videoPlayer->stop();
+    ui->rangeInput->setPlainText("");
+    seekbar->setVideoLength(0);
+    ui->progressLabel->setText("");
+}
+
 void MainWindow::on_playerLoaded()
 {
     qDebug() << "video loaded";
@@ -217,89 +229,6 @@ void MainWindow::on_rangeInput_textChanged()
     }
 
     seekbar->setRanges(ranges);
-}
-
-void MainWindow::on_exportButton_clicked()
-{
-    // todo: show what files conflict, allow overwriting
-
-    QFileInfo fileToExport(this->filename);
-    if (!fileToExport.exists() || !fileToExport.isFile() )
-    {
-        QMessageBox message;
-        message.setText("Source file does not exist");
-        message.exec();
-        return;
-    }
-
-    QString parentDir = fileToExport.dir().absolutePath();
-
-    videoPlayer->pause();
-
-    QString outputFilename = QFileDialog::getSaveFileName(
-                this, "Save File", parentDir, "Video Files (*.mp4)");
-
-    if (outputFilename == "")
-    {
-        qDebug() << "cancelled export";
-        return;
-    }
-
-    if (!outputFilename.toLower().endsWith(".mp4"))
-        outputFilename += ".mp4";
-
-    qDebug() << "output filename " << outputFilename;
-
-    exportProcessor.setFilename(this->filename);
-    for (pair<qint64, qint64> range : ranges)
-    {
-        exportProcessor.addRange(range.first, range.second);
-    }
-
-    vector<QString> generatedFiles = exportProcessor.getFilenames(outputFilename);
-    vector<QString> existingFiles = checkExistingFiles(generatedFiles);
-
-    if (existingFiles.size() > 0)
-    {
-        QMessageBox message;
-        message.setText("This will override an existing file");
-        message.exec();
-        return;
-    }
-
-    exportDialog = make_shared<QProgressDialog>(this);
-    exportDialog->setSizeGripEnabled(false);
-    exportDialog->setWindowModality(Qt::WindowModal);
-    exportDialog->setLabelText("Exporting files...");
-    exportDialog->setRange(0, 100);
-    connect(exportDialog.get(), SIGNAL(canceled()), SLOT(on_exportCancelled()));
-
-    exportDialog->open();
-
-    exportProcessor.process(outputFilename);
-}
-
-void MainWindow::on_exportCancelled()
-{
-    qDebug() << "attempted cancel";
-    // todo: implement
-}
-
-void MainWindow::on_exportedItem(int itemIdx)
-{
-    qDebug() << "Exported file number " << itemIdx;
-    // todo: update label
-}
-
-void MainWindow::on_exportFinished()
-{
-    qDebug() << "Export complete" << endl;
-    exportDialog->close();
-}
-
-void MainWindow::on_exportProgress(int progress)
-{
-    exportDialog->setValue(progress);
 }
 
 void MainWindow::on_speedDecreaseButton_clicked()
@@ -392,4 +321,92 @@ void MainWindow::on_trimRightButton_clicked()
 
     syncRangesToText();
     qDebug() << "performed trim right";
+}
+
+void MainWindow::on_unloadButton_clicked()
+{
+    this->close();
+}
+
+void MainWindow::on_exportButton_clicked()
+{
+    // todo: show what files conflict, allow overwriting
+
+    QFileInfo fileToExport(this->filename);
+    if (!fileToExport.exists() || !fileToExport.isFile() )
+    {
+        QMessageBox message;
+        message.setText("Source file does not exist");
+        message.exec();
+        return;
+    }
+
+    QString parentDir = fileToExport.dir().absolutePath();
+
+    videoPlayer->pause();
+
+    QString outputFilename = QFileDialog::getSaveFileName(
+                this, "Save File", parentDir, "Video Files (*.mp4)");
+
+    if (outputFilename == "")
+    {
+        qDebug() << "cancelled export";
+        return;
+    }
+
+    if (!outputFilename.toLower().endsWith(".mp4"))
+        outputFilename += ".mp4";
+
+    qDebug() << "output filename " << outputFilename;
+
+    exportProcessor.setFilename(this->filename);
+    for (pair<qint64, qint64> range : ranges)
+    {
+        exportProcessor.addRange(range.first, range.second);
+    }
+
+    vector<QString> generatedFiles = exportProcessor.getFilenames(outputFilename);
+    vector<QString> existingFiles = checkExistingFiles(generatedFiles);
+
+    if (existingFiles.size() > 0)
+    {
+        QMessageBox message;
+        message.setText("This will override an existing file");
+        message.exec();
+        return;
+    }
+
+    exportDialog = make_shared<QProgressDialog>(this);
+    exportDialog->setSizeGripEnabled(false);
+    exportDialog->setWindowModality(Qt::WindowModal);
+    exportDialog->setLabelText("Exporting files...");
+    exportDialog->setRange(0, 100);
+    connect(exportDialog.get(), SIGNAL(canceled()), SLOT(on_exportCancelled()));
+
+    exportDialog->open();
+
+    exportProcessor.process(outputFilename);
+}
+
+void MainWindow::on_exportCancelled()
+{
+    qDebug() << "attempted cancel";
+    // todo: implement
+}
+
+void MainWindow::on_exportedItem(int itemIdx)
+{
+    qDebug() << "Exported file number " << itemIdx;
+    // todo: update label
+}
+
+void MainWindow::on_exportFinished()
+{
+    qDebug() << "Export complete" << endl;
+    exportDialog->close();
+}
+
+void MainWindow::on_exportProgress(int progress)
+{
+    exportDialog->setValue(progress);
 }

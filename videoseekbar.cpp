@@ -20,6 +20,7 @@ void VideoSeekBar::setPosition(qint64 milliseconds)
 void VideoSeekBar::setVideoLength(qint64 milliseconds)
 {
     this->videoLength = milliseconds;
+    this->repaint();
 }
 
 void VideoSeekBar::setRanges(vector<pair<qint64, qint64> > ranges)
