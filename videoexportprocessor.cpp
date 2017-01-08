@@ -16,23 +16,19 @@ VideoExportProcessor::VideoExportProcessor(QObject *parent) :
     connect(&processor, SIGNAL(progress(int)), SLOT(on_itemProgress(int)));
 }
 
-void VideoExportProcessor::setFilename(const QString &filename)
+void VideoExportProcessor::setInputFilename(const QString &filename)
 {
     this->filename = filename;
+}
+
+void VideoExportProcessor::clearRanges()
+{
+    this->ranges.clear();
 }
 
 void VideoExportProcessor::addRange(qint64 start, qint64 end)
 {
     this->ranges.push_back(pair<qint64, qint64>(start, end));
-}
-
-void VideoExportProcessor::setRanges(const vector<pair<qint64, qint64> >& inputRanges)
-{
-    this->ranges.clear();
-    for (pair<qint64, qint64> range : inputRanges)
-    {
-        addRange(range.first, range.second);
-    }
 }
 
 vector<QString> VideoExportProcessor::getFilenames(const QString &exportPath)

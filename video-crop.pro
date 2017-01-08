@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     videoseekbar.cpp \
     util.cpp \
     singlevideoprocessor.cpp \
-    videoexportprocessor.cpp
+    videoexportprocessor.cpp \
+    rangecontainer.cpp
 
 HEADERS  += mainwindow.h \
     videoseekbar.h \
     util.h \
     singlevideoprocessor.h \
-    videoexportprocessor.h
+    videoexportprocessor.h \
+    rangecontainer.h
 
 FORMS    += \
     mainwindow.ui

@@ -23,10 +23,9 @@ void VideoSeekBar::setVideoLength(qint64 milliseconds)
     this->repaint();
 }
 
-void VideoSeekBar::setRanges(vector<pair<qint64, qint64> > ranges)
+void VideoSeekBar::setRangeContainer(RangeContainer& ranges)
 {
-    this->ranges = ranges;
-    this->repaint();
+    this->ranges = &ranges;
 }
 
 void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
@@ -63,7 +62,7 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
     QRect rectangle(0, gutterSize, this->width(), this->height() - gutterSize);
     painter.fillRect(rectangle, QColor(130, 130, 130));
 
-    for (pair<qint64, qint64> p : this->ranges)
+    for (pair<qint64, qint64> p : *this->ranges)
     {
         int start = (p.first * 1.0 / videoLength) * width;
         int finish = (p.second * 1.0 / videoLength) * width;

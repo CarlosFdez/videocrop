@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     seekLayout->setContentsMargins(0, 0, 0, 0);
     seekLayout->addWidget(seekbar);
     ui->seekContainer->setLayout(seekLayout);
+    seekbar->setRangeContainer(ranges);
 
     // set video widget
     QVBoxLayout* layout = new QVBoxLayout();
@@ -174,9 +175,10 @@ void MainWindow::on_playerLoaded()
 
     seekbar->setVideoLength(videoPlayer->duration());
 
-    QString endTime = millisecondsToTimestamp(videoPlayer->duration(), false);
-    auto rangeTxt = QString("%1, %2").arg("00:00", endTime);
-    ui->rangeInput->setPlainText(rangeTxt);
+    ranges.clear();
+    ranges.setVideoLength(videoPlayer->duration());
+    ranges.add(0, videoPlayer->duration());
+    syncRangesToText();
 }
 
 void MainWindow::on_playerPositionChanged(qint64 position)
@@ -238,10 +240,10 @@ void MainWindow::on_rangeInput_textChanged()
             continue;
 
         qDebug() << "times " << first << " - " << second;
-        ranges.push_back(pair<qint64, qint64>(first, second));
+        ranges.add(first, second);
     }
 
-    seekbar->setRanges(ranges);
+    seekbar->repaint();
 }
 
 void MainWindow::on_speedDecreaseButton_clicked()
@@ -258,35 +260,10 @@ void MainWindow::on_speedIncreaseButton_clicked()
     videoPlayer->setSpeed(newSpeed);
 }
 
-int MainWindow::getRegionAtOrBeforeIdx(qint64 position)
-{
-    for (int i = 0; i < ranges.size(); i++)
-    {
-        pair<qint64, qint64> range = ranges[i];
-        if (range.first <= position && range.second > position)
-            return i;
-        if (range.first > position)
-            return i-1;
-    }
-    return ranges.size() - 1;
-}
-
 void MainWindow::on_trimLeftButton_clicked()
 {
     qint64 position = videoPlayer->position();
-
-    // if we're after all ranges, then create a new one at the end
-    if (ranges.empty() || ranges.back().second < position)
-    {
-        ranges.push_back(pair<qint64, qint64>(position, videoPlayer->duration()));
-    }
-    else
-    {
-        int idx = getRegionAtOrBeforeIdx(position);
-        if (ranges[idx].second <= position)
-            idx++;
-        ranges[idx].first = position;
-    }
+    ranges.trimLeftAt(position);
 
     syncRangesToText();
     qDebug() << "performed trim left";
@@ -294,22 +271,8 @@ void MainWindow::on_trimLeftButton_clicked()
 
 void MainWindow::on_splitMiddleButton_clicked()
 {
-    vector<pair<qint64, qint64>> oldRanges = ranges;
-    ranges.clear();
-
     qint64 position = videoPlayer->position();
-    for (pair<qint64, qint64> &range : oldRanges)
-    {
-        if (range.first < position && range.second > position)
-        {
-            ranges.push_back(pair<qint64, qint64>(range.first, position));
-            ranges.push_back(pair<qint64, qint64>(position, range.second));
-        }
-        else
-        {
-            ranges.push_back(range);
-        }
-    }
+    ranges.splitAt(position);
 
     syncRangesToText();
     qDebug() << "performed split";
@@ -318,19 +281,7 @@ void MainWindow::on_splitMiddleButton_clicked()
 void MainWindow::on_trimRightButton_clicked()
 {
     qint64 position = videoPlayer->position();
-
-    // if we're before all ranges, then create a new one at the start
-    if (ranges.empty() || ranges.front().first > position)
-    {
-        ranges.insert(ranges.begin(), pair<qint64, qint64>(0, position));
-    }
-    else
-    {
-        // find the one at or before and set it
-        // This won't return -1 as the check above handles it
-        int idx = getRegionAtOrBeforeIdx(position);
-        ranges[idx].second = position;
-    }
+    ranges.trimRightAt(position);
 
     syncRangesToText();
     qDebug() << "performed trim right";
@@ -372,8 +323,12 @@ void MainWindow::on_exportButton_clicked()
 
     qDebug() << "output filename " << outputFilename;
 
-    exportProcessor.setFilename(this->filename);
-    exportProcessor.setRanges(ranges);
+    exportProcessor.setInputFilename(this->filename);
+    exportProcessor.clearRanges();
+    for (pair<qint64, qint64> range : ranges)
+    {
+        exportProcessor.addRange(range.first, range.second);
+    }
 
     vector<QString> generatedFiles = exportProcessor.getFilenames(outputFilename);
     vector<QString> existingFiles = checkExistingFiles(generatedFiles);

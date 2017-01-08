@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <vector>
+#include <rangecontainer.h>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ public:
     VideoSeekBar();
     void setPosition(qint64 milliseconds);
     void setVideoLength(qint64 milliseconds);
-    void setRanges(vector<pair<qint64, qint64>> ranges);
+    void setRangeContainer(RangeContainer& ranges);
 
 signals:
     // fired when the postion changes for any reason
@@ -31,7 +32,7 @@ protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    vector<pair<qint64, qint64>> ranges;
+    RangeContainer *ranges;
     qint64 position;
     qint64 videoLength;
 };

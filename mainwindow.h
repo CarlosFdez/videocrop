@@ -11,6 +11,7 @@
 
 #include <videoseekbar.h>
 #include <videoexportprocessor.h>
+#include <rangecontainer.h>
 
 using namespace std;
 
@@ -45,9 +46,6 @@ protected:
 
     /// Internal function to update the textfield based on the range collection
     virtual void syncRangesToText();
-
-    /// Gets the idx of the region containing position, or the one before
-    int getRegionAtOrBeforeIdx(qint64 position);
 
 private slots:
     void on_playerLoaded();
@@ -89,7 +87,7 @@ private:
     qint64 seekPosition = -1;
 
     QString filename;
-    vector<pair<qint64, qint64>> ranges;
+    RangeContainer ranges;
 
     shared_ptr<QProgressDialog> exportDialog;
     VideoExportProcessor exportProcessor;
