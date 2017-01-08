@@ -1,13 +1,23 @@
-A simple project written for myself that crops videos on keyframes to maintain quality. Its intended to be similar to Avidemux but with better support for intervals and better previewing features. Written in C++ and Qt.
+# VideoCrop
 
-This is my first ever real project with C++, so any help or advice would be incredibly appreciated. This was developed for Windows but with some work on the linking it could be cross-platform.
+A gui application used to crop videos on keyframes without retranscoding to maintain quality, remuxing the video into an mp4. Its similar to one of Avidemux's use case, but supports exporting multiple intervals simultaneously and comes with video playback features. Written in C++ using Qt.
+
+This is my first real project with C++, so any help or advice would be appreciated. This was developed for Windows but does not use any Windows specific libraries, so with some work it could be cross-platform.
 
 ### Dependencies
-Uses QtAV for viewing the video and ffmpeg to perform the cutting.
-
-For ffmpeg, download the binaries from https://www.ffmpeg.org/download.html, put them in a directory somewhere, and include them in your system path. Or use the package manager if you're on a good platform.
+Uses QtAV for viewing the video and ffmpeg to crop and remux.
 
 For QtAV, venture over to http://www.qtav.org/ and get the files by installing the software and enabling development files (or building it yourself). Dump the binaries, lib, and include files into the dependencies folder.
 
+For ffmpeg, download the binaries from https://www.ffmpeg.org/download.html, put them in a directory somewhere, and include them in your system path. Or use your installed package manager (like apt or homebrew) if you're on a good platform.
+
 ### Compiling
 Open up QtCreator, run QMake, and build. I could not get it to run in debug mode, so you may have to run in release mode.
+
+### Todo
+* Clean up the base directory, start moving things into folders
+* Use an actual architecture meant for GUIs. Could be MVC, could be a state machine, could be whatever.
+* Implement options
+* Add more buttons for existing features
+* Make the screenshot button actually work
+* Figure out how to unit test C++ code (and guis)
