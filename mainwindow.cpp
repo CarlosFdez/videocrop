@@ -71,7 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
-    connect(seekbar, SIGNAL(positionSeeked(qint64)), SLOT(on_seek(qint64)));
+    connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
+    connect(seekbar, SIGNAL(positionSeeked(qint64)), SLOT(on_seekbar_seek(qint64)));
     connect(&exportProcessor, SIGNAL(progress(int)), SLOT(on_exportProgress(int)));
     connect(&exportProcessor, SIGNAL(finishedItem(int)), SLOT(on_exportedItem(int)));
     connect(&exportProcessor, SIGNAL(finishedAll()), SLOT(on_exportFinished()));
@@ -107,12 +108,12 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
 
     case Qt::Key_Left:
         // perform keyframe seek if default ever changes to accurate seek
-        videoPlayer->seek(videoPlayer->position() - SEEK_JUMP);
+        skipAmount(-SEEK_JUMP);
         break;
 
     case Qt::Key_Right:
         // perform keyframe seek if default ever changes to accurate seek
-        videoPlayer->seek(videoPlayer->position() + SEEK_JUMP);
+        skipAmount(SEEK_JUMP);
         break;
 
     default:
@@ -158,6 +159,13 @@ void MainWindow::close()
     ui->progressLabel->setText("");
 }
 
+void MainWindow::skipAmount(qint64 skipAmount)
+{
+    qint64 position = (seekPosition > -1) ? seekPosition: videoPlayer->position();
+    seekPosition = position + skipAmount;
+    videoPlayer->seek(seekPosition);
+}
+
 void MainWindow::on_playerLoaded()
 {
     qDebug() << "video loaded";
@@ -195,13 +203,18 @@ void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
     ui->togglePlayButton->setIcon(playIcon);
 }
 
+void MainWindow::on_seeked()
+{
+    seekPosition = -1;
+}
+
 void MainWindow::on_togglePlayButton_clicked(bool)
 {
     qDebug() << "clicked play button; was playing" << videoPlayer->isPlaying();
     videoPlayer->togglePause();
 }
 
-void MainWindow::on_seek(qint64 position)
+void MainWindow::on_seekbar_seek(qint64 position)
 {
     videoPlayer->seek(position);
 }
@@ -360,10 +373,7 @@ void MainWindow::on_exportButton_clicked()
     qDebug() << "output filename " << outputFilename;
 
     exportProcessor.setFilename(this->filename);
-    for (pair<qint64, qint64> range : ranges)
-    {
-        exportProcessor.addRange(range.first, range.second);
-    }
+    exportProcessor.setRanges(ranges);
 
     vector<QString> generatedFiles = exportProcessor.getFilenames(outputFilename);
     vector<QString> existingFiles = checkExistingFiles(generatedFiles);
@@ -376,13 +386,13 @@ void MainWindow::on_exportButton_clicked()
         return;
     }
 
+    // open export process dialog
     exportDialog = make_shared<QProgressDialog>(this);
     exportDialog->setSizeGripEnabled(false);
     exportDialog->setWindowModality(Qt::WindowModal);
-    exportDialog->setLabelText("Exporting files...");
     exportDialog->setRange(0, 100);
+    on_exportedItem(0);
     connect(exportDialog.get(), SIGNAL(canceled()), SLOT(on_exportCancelled()));
-
     exportDialog->open();
 
     exportProcessor.process(outputFilename);
@@ -397,13 +407,25 @@ void MainWindow::on_exportCancelled()
 void MainWindow::on_exportedItem(int itemIdx)
 {
     qDebug() << "Exported file number " << itemIdx;
-    // todo: update label
+
+    // update export dialog with progress
+    QString labelText;
+    if (itemIdx >= ranges.size())
+        labelText = "Finished exporting";
+    else
+        labelText = QString("Exporting %1 of %2").arg(itemIdx + 1).arg(ranges.size());
+    exportDialog->setLabelText(labelText);
+    exportDialog->repaint();
 }
 
 void MainWindow::on_exportFinished()
 {
+    QMessageBox msgBox;
+    msgBox.setText("Export complete");
+
     qDebug() << "Export complete" << endl;
     exportDialog->close();
+    msgBox.exec();
 }
 
 void MainWindow::on_exportProgress(int progress)

@@ -26,6 +26,15 @@ void VideoExportProcessor::addRange(qint64 start, qint64 end)
     this->ranges.push_back(pair<qint64, qint64>(start, end));
 }
 
+void VideoExportProcessor::setRanges(const vector<pair<qint64, qint64> >& inputRanges)
+{
+    this->ranges.clear();
+    for (pair<qint64, qint64> range : inputRanges)
+    {
+        addRange(range.first, range.second);
+    }
+}
+
 vector<QString> VideoExportProcessor::getFilenames(const QString &exportPath)
 {
     vector<QString> results;
@@ -109,7 +118,7 @@ void VideoExportProcessor::on_itemProgress(int itemProgress)
     qint64 currentDuration = ranges[currentItem].second - ranges[currentItem].first;
     double currentWeight = currentDuration * 1.0 / totalDuration;
 
-    int totalProgress = round(completedProgress + (itemProgress * currentWeight));
+    int totalProgress = floor(completedProgress + (itemProgress * currentWeight));
 
     emit progress(totalProgress);
 }

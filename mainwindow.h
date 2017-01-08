@@ -36,6 +36,9 @@ public:
     void close();
 
 protected:
+    /// Skips a certain amount of video. Can be positive or negative
+    void skipAmount(qint64 skipAmount);
+
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *evt);
     virtual void keyPressEvent(QKeyEvent *);
@@ -50,8 +53,10 @@ private slots:
     void on_playerLoaded();
     void on_playerPositionChanged(qint64 position);
     void on_playerStateChanged(QtAV::AVPlayer::State state);
+    void on_seeked();
+
     void on_togglePlayButton_clicked(bool);
-    void on_seek(qint64 position);
+    void on_seekbar_seek(qint64 position);
 
     void on_rangeInput_textChanged();
 
@@ -81,6 +86,7 @@ private:
 
     shared_ptr<QtAV::VideoOutput> videoOutput;
     shared_ptr<QtAV::AVPlayer> videoPlayer;
+    qint64 seekPosition = -1;
 
     QString filename;
     vector<pair<qint64, qint64>> ranges;

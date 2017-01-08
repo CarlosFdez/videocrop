@@ -23,6 +23,9 @@ public:
     // adds a range in milliseconds
     void addRange(qint64 start, qint64 end);
 
+    /// Sets the ranges that will be processed, each one a [start, end] range in milliseconds
+    void setRanges(const vector<pair<qint64, qint64>>& ranges);
+
     // Calculates export filepaths using the export path.
     // If there is only one item, its unchanged.
     // If there is more than one, its base-{idx}.{extension}
