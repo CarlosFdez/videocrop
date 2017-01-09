@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
+    // Initialize Video player widget
     videoPlayer = make_shared<QtAV::AVPlayer>();
     videoPlayer->setRenderer(videoOutput.get());
     videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
@@ -59,9 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(videoOutput->widget());
     ui->videoWidget->setLayout(layout);
-
-    //this->setFocusPolicy(Qt::StrongFocus);
-    //ui->rangeInput->installEventFilter(this);
 
     // default icon states
     ui->togglePlayButton->setIcon(QIcon(":/images/play.png"));
@@ -150,11 +148,9 @@ void MainWindow::openFile(const QString& filename)
 
 void MainWindow::close()
 {
-    if (videoPlayer->isPlaying())
-        videoPlayer->stop();
-
     this->filename = QString();
     videoPlayer->stop();
+
     ui->rangeInput->setPlainText("");
     seekbar->setVideoLength(0);
     ui->progressLabel->setText("");

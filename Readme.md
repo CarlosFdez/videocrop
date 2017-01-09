@@ -7,7 +7,7 @@ This is my first real project with C++, so any help or advice would be appreciat
 ### Dependencies
 Uses QtAV for viewing the video and ffmpeg to crop and remux.
 
-For QtAV, venture over to http://www.qtav.org/ and get the files by installing the software and enabling development files (or building it yourself). Dump the binaries, lib, and include files into the dependencies folder.
+For QtAV, venture over to http://www.qtav.org/ and get the files by installing the software and enabling development files (or building it yourself). Dump the binaries, lib, and include files into the dependencies folder. You may have to rename the debug lib files on Windows (QtAV1.lib to QtAV5d.lib and QtAVWidgets1.lib to Qt5AVWidgetsd.lib).
 
 For ffmpeg, download the binaries from https://www.ffmpeg.org/download.html, put them in a directory somewhere, and include them in your system path. Or use your installed package manager (like apt or homebrew) if you're on a good platform.
 
@@ -15,7 +15,7 @@ For ffmpeg, download the binaries from https://www.ffmpeg.org/download.html, put
 Open up QtCreator, run QMake, and build. I could not get it to run in debug mode, so you may have to run in release mode.
 
 ### Todo
-* Clean up the base directory, start moving things into folders
+* Fix debug mode, currently only works in release mode.
 * Use an actual architecture meant for GUIs. Could be MVC, could be a state machine, could be whatever.
 * Implement options
 * Add more buttons for existing features
