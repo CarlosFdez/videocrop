@@ -4,6 +4,13 @@
 #include <QPainter>
 #include <QtDebug>
 
+// todo: define some other way (stylesheet?)
+const int RANGE_BORDER_WIDTH = 3;
+const QColor BASE_COLOR(130, 130, 130);
+const QColor RANGE_COLOR(60, 60, 255);
+const QColor RANGE_BORDER_COLOR(50, 50, 232);
+const QColor SEEK_LINE_COLOR(255, 0, 0);
+
 VideoSeekBar::VideoSeekBar()
 {
     this->setAutoFillBackground(true);
@@ -58,17 +65,28 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
     int lineThickness = 2;
     int gutterSize = 10;
 
-    // dark backdrop
+    // draw background color
     QRect rectangle(0, gutterSize, this->width(), this->height() - gutterSize);
-    painter.fillRect(rectangle, QColor(130, 130, 130));
+    painter.fillRect(rectangle, BASE_COLOR);
+
+    QPen rangeBorderPen(RANGE_BORDER_COLOR, RANGE_BORDER_WIDTH,
+                        Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
 
     for (pair<qint64, qint64> p : *this->ranges)
     {
         int start = (p.first * 1.0 / videoLength) * width;
         int finish = (p.second * 1.0 / videoLength) * width;
 
-        QRect rectangle(start, gutterSize, finish - start, this->height() - gutterSize);
-        painter.fillRect(rectangle, QColor(60, 60, 255));
+        QRectF rangeRect(start, gutterSize,
+                         finish - start, this->height() - gutterSize);
+
+        // draw filled range
+        painter.fillRect(rangeRect, RANGE_COLOR);
+
+        // draw border of range
+        painter.setPen(rangeBorderPen);
+        rangeRect -= (QMarginsF() + RANGE_BORDER_WIDTH/2.0);
+        painter.drawRect(rangeRect);
     }
 
     // draw seek line
@@ -76,6 +94,6 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
     {
         int lineDrawPosition = (this->position * 1.0 / this->videoLength) * width;
         QRect line(lineDrawPosition - lineThickness / 2, 0, lineThickness, height);
-        painter.fillRect(line, QColor(255, 0, 0));
+        painter.fillRect(line, SEEK_LINE_COLOR);
     }
 }
