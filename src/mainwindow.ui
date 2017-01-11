@@ -113,7 +113,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images.qrc">
+              <iconset resource="../images.qrc">
                <normaloff>:/images/play.png</normaloff>:/images/play.png</iconset>
              </property>
              <property name="checkable">
@@ -130,7 +130,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images.qrc">
+              <iconset resource="../images.qrc">
                <normaloff>:/images/screenshot.png</normaloff>:/images/screenshot.png</iconset>
              </property>
              <property name="checkable">
@@ -173,7 +173,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images.qrc">
+              <iconset resource="../images.qrc">
                <normaloff>:/images/trimleft.png</normaloff>:/images/trimleft.png</iconset>
              </property>
              <property name="checkable">
@@ -190,7 +190,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images.qrc">
+              <iconset resource="../images.qrc">
                <normaloff>:/images/splitmiddle.png</normaloff>:/images/splitmiddle.png</iconset>
              </property>
              <property name="checkable">
@@ -207,7 +207,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="images.qrc">
+              <iconset resource="../images.qrc">
                <normaloff>:/images/trimright.png</normaloff>:/images/trimright.png</iconset>
              </property>
              <property name="checkable">
@@ -347,9 +347,6 @@
            </widget>
           </item>
          </layout>
-         <zorder>rangeInput</zorder>
-         <zorder>unloadButton</zorder>
-         <zorder>exportButton</zorder>
         </widget>
        </item>
       </layout>
@@ -359,7 +356,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="images.qrc"/>
+  <include location="../images.qrc"/>
  </resources>
  <connections/>
 </ui>
