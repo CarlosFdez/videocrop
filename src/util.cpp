@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QFileInfo>
+#include <QProcess>
 
 using namespace std;
 
@@ -77,4 +78,22 @@ vector<QString> checkExistingFiles(vector<QString> filesToTest)
             results.push_back(filename);
     }
     return results;
+}
+
+bool exportVideoFrame(QString inputFilename, QString outputFilename, qint64 position)
+{
+    QProcess backgroundProcess;
+    QStringList arguments;
+    arguments << "-ss" << millisecondsToTimestamp(position, false);
+    arguments << "-y"; // overwrite
+    arguments << "-i" << inputFilename;
+    arguments << "-vframes" << "1";
+    arguments << "-f" << "image2";
+    arguments << outputFilename;
+
+    backgroundProcess.start("ffmpeg", arguments);
+    backgroundProcess.waitForFinished();
+
+    QFileInfo exported(outputFilename);
+    return exported.exists() && exported.isFile();
 }

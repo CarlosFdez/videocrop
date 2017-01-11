@@ -76,6 +76,8 @@ private slots:
     void on_exportFinished();
     void on_exportProgress(int progress);
 
+    void on_snapshotButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

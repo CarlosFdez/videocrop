@@ -25,6 +25,5 @@ If someone wishes to take this on, please let me know. I wrote this application 
 * Use an actual architecture meant for GUIs. Could be MVC, could be a state machine, could be whatever.
 * Implement options
 * Add more buttons for existing features
-* Make the screenshot button actually work
 * Figure out how to unit test C++ code (and guis)
 * Better deployment scheme (maybe a separate deployment script to copy the proper files?)

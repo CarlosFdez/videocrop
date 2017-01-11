@@ -383,3 +383,39 @@ void MainWindow::on_exportProgress(int progress)
 {
     exportDialog->setValue(progress);
 }
+
+void MainWindow::on_snapshotButton_clicked()
+{
+    QFileInfo fileToExport(this->filename);
+    if (!fileToExport.exists() || !fileToExport.isFile() )
+    {
+        QMessageBox message;
+        message.setText("Source file does not exist");
+        message.exec();
+        return;
+    }
+
+    videoPlayer->pause();
+
+    QString parentDir = fileToExport.dir().absolutePath();
+    QString outputFilename = QFileDialog::getSaveFileName(
+                this, "Save File", parentDir,
+                "PNG (*.png);;JPEG (*.jpeg)");
+
+    if (outputFilename == "") return;
+
+    qint64 position = videoPlayer->position();
+
+    if (exportVideoFrame(this->filename, outputFilename, position))
+    {
+        QMessageBox message;
+        message.setText("Finished");
+        message.exec();
+    }
+    else
+    {
+        QMessageBox message;
+        message.setText("Write failed");
+        message.exec();
+    }
+}
