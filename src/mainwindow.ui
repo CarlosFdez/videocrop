@@ -21,7 +21,7 @@
 }
 
 #rangeInput {
-	min-width: 150px;
+        min-width: 150px;
 	max-width: 150px;
 	font-size: 0.8em;
 }
@@ -122,23 +122,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="snapshotButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../images.qrc">
-               <normaloff>:/images/screenshot.png</normaloff>:/images/screenshot.png</iconset>
-             </property>
-             <property name="checkable">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QToolButton" name="speedDecreaseButton">
              <property name="enabled">
               <bool>true</bool>
@@ -163,6 +146,36 @@
               <bool>false</bool>
              </property>
             </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="skipBackwardsButton">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="skipForwardsButton">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>16</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
             <widget class="QToolButton" name="trimLeftButton">
@@ -209,6 +222,39 @@
              <property name="icon">
               <iconset resource="../images.qrc">
                <normaloff>:/images/trimright.png</normaloff>:/images/trimright.png</iconset>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>16</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QToolButton" name="snapshotButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../images.qrc">
+               <normaloff>:/images/screenshot.png</normaloff>:/images/screenshot.png</iconset>
              </property>
              <property name="checkable">
               <bool>false</bool>

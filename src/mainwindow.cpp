@@ -65,6 +65,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->togglePlayButton->setIcon(QIcon(":/images/play.png"));
     ui->speedDecreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->speedIncreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+    ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
+    ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+
+    updateTooltips();
 
     // wire up events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
@@ -154,6 +158,19 @@ void MainWindow::close()
     ui->rangeInput->setPlainText("");
     seekbar->setVideoLength(0);
     ui->progressLabel->setText("");
+}
+
+void MainWindow::updateTooltips()
+{
+    ui->togglePlayButton->setToolTip("Play/Pause (spacebar)");
+    ui->speedDecreaseButton->setToolTip("Slow Down");
+    ui->speedIncreaseButton->setToolTip("Speed Up");
+    ui->skipBackwardsButton->setToolTip("Skip Backwards (Left Arrow)");
+    ui->skipForwardsButton->setToolTip("Skip Forwards (Right Arrow)");
+    ui->trimLeftButton->setToolTip("Adjust Range Left Border");
+    ui->trimRightButton->setToolTip("Adjust Range Right Border");
+    ui->splitMiddleButton->setToolTip("Split Range");
+    ui->snapshotButton->setToolTip("Export Frame Image");
 }
 
 void MainWindow::skipAmount(qint64 skipAmount)
@@ -418,4 +435,14 @@ void MainWindow::on_snapshotButton_clicked()
         message.setText("Write failed");
         message.exec();
     }
+}
+
+void MainWindow::on_skipBackwardsButton_clicked()
+{
+    skipAmount(-SEEK_JUMP);
+}
+
+void MainWindow::on_skipForwardsButton_clicked()
+{
+    skipAmount(SEEK_JUMP);
 }

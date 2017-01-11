@@ -37,6 +37,8 @@ public:
     void close();
 
 protected:
+    void updateTooltips();
+
     /// Skips a certain amount of video. Can be positive or negative
     void skipAmount(qint64 skipAmount);
 
@@ -77,6 +79,10 @@ private slots:
     void on_exportProgress(int progress);
 
     void on_snapshotButton_clicked();
+
+    void on_skipBackwardsButton_clicked();
+
+    void on_skipForwardsButton_clicked();
 
 private:
     Ui::MainWindow *ui;
