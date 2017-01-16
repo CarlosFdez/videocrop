@@ -1,0 +1,35 @@
+---
+layout: default
+---
+<p>
+    A user interface application used to crop videos on keyframes without retranscoding to maintain quality,
+    remuxing the video into an mp4. Its similar to one of Avidemux's use cases,
+    but supports exporting multiple intervals simultaneously and comes with video playback features.
+</p>
+
+<p>
+    Because it only cuts on keyframes, the cuts are not exact. The exported file will usually be slightly larger than the specified range.
+</p>
+
+<h2>Directions</h2>
+<p>
+    To open a file, drag a video file to the open window.
+</p>
+<img src="images/example.png"/>
+<p>
+    Afterwards, you can edit the text field manually or use the Adjust Range buttons
+    to update the ranges to export (indicated by blue boxes), and click the export button to export.
+    It can support almost any input format, but the export is only to mp4.
+</p>
+
+<h2>How does it work?</h2>
+<p>
+    A video is composed of a container consisting of several streams, where each stream is a video or audio track.
+    What the application is replace the container for a new one and copy the desired segment of the stream. However,
+    due to the format that most video streams are encoded, the segment is not exact, and will usually start before and end after the given range.
+</p>
+<p>To understand why the cuts are not exact, you would need to understand interframe compression.</p>
+<p>
+    This application is a frontend for <a href="https://www.ffmpeg.org/">FFmpeg</a>, and works under-the-hood by executing the following ffmpeg command for each export range:
+</p>
+<code>ffmpeg -ss <em>start</em> -i <em>input_file</em> -avoid_negative_ts make_zero -t <em>duration</em> -map 0 -codec copy <em>output_file</em></code>

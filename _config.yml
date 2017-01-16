@@ -1,0 +1,18 @@
+# Setup
+title:        VideoCrop
+tagline:      An application to crop and remux without losing quality
+baseurl:      ""
+paginate:     1
+project-url:  https://github.com/CarlosFdez/videocrop
+
+# About/contact
+author:
+  name:       Carlos Fernandez
+  site:       https://github.com/CarlosFdez
+
+# Gems
+gems:
+  - jekyll-paginate
+
+#Others
+markdown: kramdown
