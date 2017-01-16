@@ -2,13 +2,13 @@
 layout: default
 ---
 <p>
-    A user interface application used to crop videos on keyframes without retranscoding to maintain quality,
-    remuxing the video into an mp4. Its similar to one of Avidemux's use cases,
-    but supports exporting multiple intervals simultaneously and comes with video playback features.
+    An application used to crop videos on keyframes without transcoding to maintain quality and remux to mp4.
+    Its similar to one of <a href="http://avidemux.sourceforge.net/">Avidemux's</a> use cases,
+    but supports exporting multiple intervals simultaneously and comes with more video playback features.
 </p>
 
 <p>
-    Because it only cuts on keyframes, the cuts are not exact. The exported file will usually be slightly larger than the specified range.
+    Because it only cuts on keyframes, the cuts are not exact. The exported file will (usually) be slightly larger than the specified range.
 </p>
 
 <h2>Directions</h2>
@@ -18,17 +18,28 @@ layout: default
 <img src="images/example.png"/>
 <p>
     Afterwards, you can edit the text field manually or use the Adjust Range buttons
-    to update the ranges to export (indicated by blue boxes), and click the export button to export.
+    to update the ranges that will be exported (indicated by blue boxes), and click the export button.
     It can support almost any input format, but the export is only to mp4.
 </p>
 
+<h2>Missing Features</h2>
+<p>The application is not 100% complete and is missing the following:</p>
+<ul>
+    <li>A way to open videos without drag and drop</li>
+    <li>An options menu for hotkeys and video skip length</li>
+    <li>Cancelling the Export process (currently the button does nothing)</li>
+    <li>Detecting keyframes and auto adjusting ranges to snap to keyframes</li>
+</ul>
+
 <h2>How does it work?</h2>
 <p>
-    A video is composed of a container consisting of several streams, where each stream is a video or audio track.
-    What the application is replace the container for a new one and copy the desired segment of the stream. However,
-    due to the format that most video streams are encoded, the segment is not exact, and will usually start before and end after the given range.
+    A video is composed of a container containing several streams, where each stream is a video or audio track.
+    The application replaces the container for a new one and copies a section of each stream.
+    For most video codecs (notably h264) this segment is not exact, and will usually start before and end after the given range.
 </p>
-<p>To understand why the cuts are not exact, you would need to understand interframe compression.</p>
+<p>
+    To understand why the cuts are not exact, look into interframe compression.
+</p>
 <p>
     This application is a frontend for <a href="https://www.ffmpeg.org/">FFmpeg</a>, and works under-the-hood by executing the following ffmpeg command for each export range:
 </p>
