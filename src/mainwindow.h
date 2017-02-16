@@ -30,11 +30,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    /// Returns true if a file is open and it exists
+    bool fileExists();
+
+    /// Returns a path to the location for any open/save dialogs
+    QString getFileDialogLocation();
+
     /// Programmatically opens a video file
     void openFile(const QString& filename);
 
     /// Programmatically closes any open videos
-    void close();
+    void closeVideo();
 
 protected:
     void updateTooltips();
@@ -70,7 +76,6 @@ private slots:
 
     void on_trimRightButton_clicked();
 
-    void on_unloadButton_clicked();
     void on_exportButton_clicked();
 
     void on_exportCancelled();
@@ -83,6 +88,11 @@ private slots:
     void on_skipBackwardsButton_clicked();
 
     void on_skipForwardsButton_clicked();
+
+    /* file menu */
+    void on_menuOpen_triggered();
+    void on_menuUnload_triggered();
+    void on_menuExit_triggered();
 
 private:
     Ui::MainWindow *ui;
