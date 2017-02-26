@@ -109,6 +109,9 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -126,6 +129,9 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -139,6 +145,9 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -149,6 +158,9 @@
            </item>
            <item>
             <widget class="QToolButton" name="skipBackwardsButton">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -156,6 +168,9 @@
            </item>
            <item>
             <widget class="QToolButton" name="skipForwardsButton">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -182,6 +197,9 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -199,6 +217,9 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -215,6 +236,9 @@
             <widget class="QToolButton" name="trimRightButton">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
              </property>
              <property name="text">
               <string/>
@@ -248,6 +272,9 @@
             <widget class="QToolButton" name="snapshotButton">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
              </property>
              <property name="text">
               <string/>
@@ -396,6 +423,9 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
@@ -406,6 +436,9 @@
     <addaction name="menuExit"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="title">
      <string>Player</string>
     </property>

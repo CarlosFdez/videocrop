@@ -43,6 +43,7 @@ void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
         setPosition(position);
         emit positionSeeked(position);
     }
+    QWidget::mousePressEvent(evt);
 }
 
 void VideoSeekBar::mouseMoveEvent(QMouseEvent *evt)
@@ -53,6 +54,7 @@ void VideoSeekBar::mouseMoveEvent(QMouseEvent *evt)
         setPosition(position);
         emit positionSeeked(position);
     }
+    QWidget::mouseMoveEvent(evt);
 }
 
 void VideoSeekBar::paintEvent(QPaintEvent *event)

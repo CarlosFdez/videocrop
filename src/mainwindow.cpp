@@ -145,6 +145,14 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
     }
 }
 
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    // Clicking anywhere else should remove focus from the rangeInput.
+    // If we're clicking on rangeInput, we'll just reacquire focus and nothing happens.
+    ui->rangeInput->clearFocus();
+    QMainWindow::mousePressEvent(event);
+}
+
 void MainWindow::syncRangesToText()
 {
     ui->rangeInput->property("plainText").toString();
@@ -210,10 +218,10 @@ void MainWindow::on_playerLoaded()
 
 void MainWindow::on_playerAudioTracksLoaded(QVariantList tracks)
 {
-    ui->menuAudioTracks->clear();
     menuAudioTracksGroup = shared_ptr<QActionGroup>(new QActionGroup(this));
     connect(menuAudioTracksGroup.get(), SIGNAL(triggered(QAction*)), SLOT(on_changeAudioTrackTriggered(QAction*)));
 
+    ui->menuAudioTracks->clear();
     for (int i = 0; i < tracks.size(); i++)
     {
         QString trackName = tracks[i].toMap()["title"].toString();

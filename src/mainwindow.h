@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMainWindow>
 #include <QString>
 #include <QDropEvent>
 #include <QKeyEvent>
-#include <QMainWindow>
+#include <QMouseEvent>
 #include <QActionGroup>
 #include <memory>
 #include <QtAV>
@@ -50,6 +51,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *evt);
     virtual void keyPressEvent(QKeyEvent *);
+    virtual void mousePressEvent(QMouseEvent *event);
 
     /// Internal function to update the textfield based on the range collection
     virtual void syncRangesToText();
