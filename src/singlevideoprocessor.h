@@ -30,6 +30,7 @@ protected slots:
     void readyReadStandardError();
 
 private:
+    bool finished_flag;
     qint64 startPosition;
     qint64 duration;
 

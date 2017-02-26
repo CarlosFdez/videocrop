@@ -405,7 +405,21 @@
     <addaction name="separator"/>
     <addaction name="menuExit"/>
    </widget>
+   <widget class="QMenu" name="menuPlayer">
+    <property name="title">
+     <string>Player</string>
+    </property>
+    <widget class="QMenu" name="menuAudioTracks">
+     <property name="title">
+      <string>Audio Track</string>
+     </property>
+    </widget>
+    <addaction name="menuPlayPause"/>
+    <addaction name="separator"/>
+    <addaction name="menuAudioTracks"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuPlayer"/>
   </widget>
   <action name="menuOpen">
    <property name="text">
@@ -425,9 +439,39 @@
     <string>Exit</string>
    </property>
   </action>
+  <action name="menuPlayPause">
+   <property name="text">
+    <string>Play/Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionAwgawg">
+   <property name="text">
+    <string>awgawg</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../images.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>menuPlayPause</sender>
+   <signal>triggered()</signal>
+   <receiver>togglePlayButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

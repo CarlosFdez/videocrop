@@ -20,6 +20,7 @@ SingleVideoProcessor::SingleVideoProcessor(QObject *parent) : QObject(parent)
 void SingleVideoProcessor::process(
         const QString &inputFile, const QString &outputFile, qint64 start, qint64 end)
 {
+    this->finished_flag = false;
     this->startPosition = start;
     this->duration = end - start;
 
@@ -43,6 +44,8 @@ void SingleVideoProcessor::process(
 
 void SingleVideoProcessor::on_finished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    this->finished_flag = true;
+    emit progress(100);
     emit finished();
 }
 
@@ -53,6 +56,9 @@ void SingleVideoProcessor::readyReadStandardOutput()
 
 void SingleVideoProcessor::readyReadStandardError()
 {
+    // skip progress report if finished
+    if (this->finished_flag) return;
+
     // progress information is in the standard error
     QString line = backgroundProcess.readAllStandardError();
     qDebug() << line;

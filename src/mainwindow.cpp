@@ -68,9 +68,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
 
-    updateTooltips();
+    // initialize tooltips
+    // todo: once config is implemented, move to an setConfig() method
+    ui->togglePlayButton->setToolTip("Play/Pause (spacebar)");
+    ui->speedDecreaseButton->setToolTip("Slow Down");
+    ui->speedIncreaseButton->setToolTip("Speed Up");
+    ui->skipBackwardsButton->setToolTip("Skip Backwards (Left Arrow)");
+    ui->skipForwardsButton->setToolTip("Skip Forwards (Right Arrow)");
+    ui->trimLeftButton->setToolTip("Adjust Range Left Border");
+    ui->trimRightButton->setToolTip("Adjust Range Right Border");
+    ui->splitMiddleButton->setToolTip("Split Range");
+    ui->snapshotButton->setToolTip("Export Frame Image");
 
-    // wire up events
+    // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
@@ -119,10 +129,6 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
 {
     switch (evt->key())
     {
-    case Qt::Key_Space:
-        this->videoPlayer->togglePause();
-        break;
-
     case Qt::Key_Left:
         // perform keyframe seek if default ever changes to accurate seek
         skipAmount(-SEEK_JUMP);
@@ -162,29 +168,22 @@ void MainWindow::openFile(const QString& filename)
 
     videoPlayer->setFile(filename);
     videoPlayer->load();
+
+    // once the video is loaded, an event is fired and loading continues
 }
 
 void MainWindow::closeVideo()
 {
+    this->audioTracks.clear();
     this->filename = QString();
     videoPlayer->stop();
 
     ui->rangeInput->setPlainText("");
     seekbar->setVideoLength(0);
     ui->progressLabel->setText("");
-}
 
-void MainWindow::updateTooltips()
-{
-    ui->togglePlayButton->setToolTip("Play/Pause (spacebar)");
-    ui->speedDecreaseButton->setToolTip("Slow Down");
-    ui->speedIncreaseButton->setToolTip("Speed Up");
-    ui->skipBackwardsButton->setToolTip("Skip Backwards (Left Arrow)");
-    ui->skipForwardsButton->setToolTip("Skip Forwards (Right Arrow)");
-    ui->trimLeftButton->setToolTip("Adjust Range Left Border");
-    ui->trimRightButton->setToolTip("Adjust Range Right Border");
-    ui->splitMiddleButton->setToolTip("Split Range");
-    ui->snapshotButton->setToolTip("Export Frame Image");
+    ui->menuAudioTracks->clear();
+    menuAudioTracksGroup.reset();
 }
 
 void MainWindow::skipAmount(qint64 skipAmount)
@@ -198,14 +197,42 @@ void MainWindow::on_playerLoaded()
 {
     qDebug() << "video loaded";
     this->setWindowTitle(this->filename);
-    videoPlayer->play(); // temp
+
+    // todo: split into two parts: getting data about video, and updating the form to reflect the video
+    // this should make this function easier to reason as it grows in size in the future
+
+    // load audio track names
+    this->audioTracks.clear();
+    for (const QVariant& item : videoPlayer->internalAudioTracks())
+    {
+        QString trackName = item.toMap()["title"].toString();
+        this->audioTracks.append(trackName);
+        qDebug() << "Added audio track " << trackName;
+    }
 
     seekbar->setVideoLength(videoPlayer->duration());
+
+    // binding audio tracks to menus
+    ui->menuAudioTracks->clear();
+    menuAudioTracksGroup = shared_ptr<QActionGroup>(new QActionGroup(this));
+    connect(menuAudioTracksGroup.get(), SIGNAL(triggered(QAction*)), SLOT(on_changeAudioTrackTriggered(QAction*)));
+    for (int i = 0; i < this->audioTracks.size(); i++)
+    {
+        QString trackName = this->audioTracks[i];
+        QAction* trackAction = ui->menuAudioTracks->addAction(trackName);
+        trackAction->setCheckable(true);
+        trackAction->setProperty("trackIdx", i);
+        menuAudioTracksGroup->addAction(trackAction);
+
+        if (i == 0) trackAction->setChecked(true);
+    }
 
     ranges.clear();
     ranges.setVideoLength(videoPlayer->duration());
     ranges.add(0, videoPlayer->duration());
     syncRangesToText();
+
+    videoPlayer->play(); // temp
 }
 
 void MainWindow::on_playerPositionChanged(qint64 position)
@@ -237,7 +264,7 @@ void MainWindow::on_seeked()
     seekPosition = -1;
 }
 
-void MainWindow::on_togglePlayButton_clicked(bool)
+void MainWindow::on_togglePlayButton_clicked()
 {
     qDebug() << "clicked play button; was playing" << videoPlayer->isPlaying();
     videoPlayer->togglePause();
@@ -266,7 +293,6 @@ void MainWindow::on_rangeInput_textChanged()
         if (first < 0 || second < 0)
             continue;
 
-        qDebug() << "times " << first << " - " << second;
         ranges.add(first, second);
     }
 
@@ -289,29 +315,20 @@ void MainWindow::on_speedIncreaseButton_clicked()
 
 void MainWindow::on_trimLeftButton_clicked()
 {
-    qint64 position = videoPlayer->position();
-    ranges.trimLeftAt(position);
-
+    ranges.trimLeftAt(videoPlayer->position());
     syncRangesToText();
-    qDebug() << "performed trim left";
 }
 
 void MainWindow::on_splitMiddleButton_clicked()
 {
-    qint64 position = videoPlayer->position();
-    ranges.splitAt(position);
-
+    ranges.splitAt(videoPlayer->position());
     syncRangesToText();
-    qDebug() << "performed split";
 }
 
 void MainWindow::on_trimRightButton_clicked()
 {
-    qint64 position = videoPlayer->position();
-    ranges.trimRightAt(position);
-
+    ranges.trimRightAt(videoPlayer->position());
     syncRangesToText();
-    qDebug() << "performed trim right";
 }
 
 void MainWindow::on_exportButton_clicked()
@@ -361,11 +378,7 @@ void MainWindow::on_exportButton_clicked()
     }
 
     // open export process dialog
-    exportDialog = make_shared<QProgressDialog>(this);
-    exportDialog->setSizeGripEnabled(false);
-    exportDialog->setWindowModality(Qt::WindowModal);
-    exportDialog->setRange(0, 100);
-    on_exportedItem(0);
+    exportDialog = make_shared<ExportDialog>(this, ranges.size());
     connect(exportDialog.get(), SIGNAL(canceled()), SLOT(on_exportCancelled()));
     exportDialog->open();
 
@@ -381,15 +394,7 @@ void MainWindow::on_exportCancelled()
 void MainWindow::on_exportedItem(int itemIdx)
 {
     qDebug() << "Exported file number " << itemIdx;
-
-    // update export dialog with progress
-    QString labelText;
-    if (itemIdx >= ranges.size())
-        labelText = "Finished exporting";
-    else
-        labelText = QString("Exporting %1 of %2").arg(itemIdx + 1).arg(ranges.size());
-    exportDialog->setLabelText(labelText);
-    exportDialog->repaint();
+    exportDialog->incrementItem();
 }
 
 void MainWindow::on_exportFinished()
@@ -471,4 +476,14 @@ void MainWindow::on_menuExit_triggered()
 {
     this->closeVideo();
     this->close();
+}
+
+void MainWindow::on_changeAudioTrackTriggered(QAction *source)
+{
+    int trackIdx = source->property("trackIdx").toInt();
+    qDebug() << "Changing to track " << trackIdx;
+    this->videoPlayer->setAudioStream(trackIdx);
+
+    // workaround for a video freeze bug
+    this->videoPlayer->seek(this->videoPlayer->position());
 }

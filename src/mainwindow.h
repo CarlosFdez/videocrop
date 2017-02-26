@@ -1,14 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QString>
 #include <QDropEvent>
 #include <QKeyEvent>
 #include <QMainWindow>
-#include <QString>
+#include <QActionGroup>
 #include <memory>
 #include <QtAV>
-#include <QProgressDialog>
 
+#include <exportdialog.h>
 #include <videoseekbar.h>
 #include <videoexportprocessor.h>
 #include <rangecontainer.h>
@@ -43,8 +44,6 @@ public:
     void closeVideo();
 
 protected:
-    void updateTooltips();
-
     /// Skips a certain amount of video. Can be positive or negative
     void skipAmount(qint64 skipAmount);
 
@@ -61,7 +60,7 @@ private slots:
     void on_playerStateChanged(QtAV::AVPlayer::State state);
     void on_seeked();
 
-    void on_togglePlayButton_clicked(bool);
+    void on_togglePlayButton_clicked();
     void on_seekbar_seek(qint64 position);
 
     void on_rangeInput_textChanged();
@@ -94,6 +93,9 @@ private slots:
     void on_menuUnload_triggered();
     void on_menuExit_triggered();
 
+    /* player menu (note: some just trigger a toolbar button event) */
+    void on_changeAudioTrackTriggered(QAction* source);
+
 private:
     Ui::MainWindow *ui;
 
@@ -104,10 +106,15 @@ private:
     shared_ptr<QtAV::AVPlayer> videoPlayer;
     qint64 seekPosition = -1;
 
+    // information about the loaded video
     QString filename;
+    QStringList audioTracks;
     RangeContainer ranges;
 
-    shared_ptr<QProgressDialog> exportDialog;
+    // replaced on every reload
+    shared_ptr<QActionGroup> menuAudioTracksGroup;
+
+    shared_ptr<ExportDialog> exportDialog;
     VideoExportProcessor exportProcessor;
 };
 

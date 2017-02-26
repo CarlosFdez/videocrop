@@ -21,14 +21,16 @@ SOURCES += main.cpp\
     util.cpp \
     singlevideoprocessor.cpp \
     videoexportprocessor.cpp \
-    rangecontainer.cpp
+    rangecontainer.cpp \
+    exportdialog.cpp
 
 HEADERS  += mainwindow.h \
     videoseekbar.h \
     util.h \
     singlevideoprocessor.h \
     videoexportprocessor.h \
-    rangecontainer.h
+    rangecontainer.h \
+    exportdialog.h
 
 FORMS    += \
     mainwindow.ui
