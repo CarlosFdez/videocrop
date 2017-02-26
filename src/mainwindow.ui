@@ -451,8 +451,15 @@
     <addaction name="separator"/>
     <addaction name="menuAudioTracks"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="menuAbout"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayer"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="menuOpen">
    <property name="text">
@@ -480,9 +487,9 @@
     <string>Space</string>
    </property>
   </action>
-  <action name="actionAwgawg">
+  <action name="menuAbout">
    <property name="text">
-    <string>awgawg</string>
+    <string>About</string>
    </property>
   </action>
  </widget>

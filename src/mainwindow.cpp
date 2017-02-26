@@ -489,3 +489,14 @@ void MainWindow::on_changeAudioTrackTriggered(QAction *source)
     // workaround for a video freeze bug
     this->videoPlayer->seek(this->videoPlayer->position());
 }
+
+void MainWindow::on_menuAbout_triggered()
+{
+    QMessageBox message(this);
+    message.setWindowTitle("About VideoCrop");
+    message.setTextFormat(Qt::RichText);
+    message.setText("An open source cropping application application written by Carlos Fernandez. "
+                    "Uses <a href=\"\http://www.qtav.org/\">QtAV</a> and <a href=\"https://ffmpeg.org/\">FFmpeg</a>. "
+                    "Main site available <a href=\"https://carlosfdez.github.io/videocrop/\">here</a>.");
+    message.exec();
+}

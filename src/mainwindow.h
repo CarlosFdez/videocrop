@@ -99,6 +99,8 @@ private slots:
     /* player menu (note: some just trigger a toolbar button event) */
     void on_changeAudioTrackTriggered(QAction* source);
 
+    void on_menuAbout_triggered();
+
 private:
     Ui::MainWindow *ui;
 
