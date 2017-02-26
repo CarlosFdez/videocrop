@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
+    connect(videoPlayer.get(), SIGNAL(internalAudioTracksChanged(QVariantList)), SLOT(on_playerAudioTracksLoaded(QVariantList)));
     connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
     connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
@@ -174,7 +175,6 @@ void MainWindow::openFile(const QString& filename)
 
 void MainWindow::closeVideo()
 {
-    this->audioTracks.clear();
     this->filename = QString();
     videoPlayer->stop();
 
@@ -198,34 +198,7 @@ void MainWindow::on_playerLoaded()
     qDebug() << "video loaded";
     this->setWindowTitle(this->filename);
 
-    // todo: split into two parts: getting data about video, and updating the form to reflect the video
-    // this should make this function easier to reason as it grows in size in the future
-
-    // load audio track names
-    this->audioTracks.clear();
-    for (const QVariant& item : videoPlayer->internalAudioTracks())
-    {
-        QString trackName = item.toMap()["title"].toString();
-        this->audioTracks.append(trackName);
-        qDebug() << "Added audio track " << trackName;
-    }
-
     seekbar->setVideoLength(videoPlayer->duration());
-
-    // binding audio tracks to menus
-    ui->menuAudioTracks->clear();
-    menuAudioTracksGroup = shared_ptr<QActionGroup>(new QActionGroup(this));
-    connect(menuAudioTracksGroup.get(), SIGNAL(triggered(QAction*)), SLOT(on_changeAudioTrackTriggered(QAction*)));
-    for (int i = 0; i < this->audioTracks.size(); i++)
-    {
-        QString trackName = this->audioTracks[i];
-        QAction* trackAction = ui->menuAudioTracks->addAction(trackName);
-        trackAction->setCheckable(true);
-        trackAction->setProperty("trackIdx", i);
-        menuAudioTracksGroup->addAction(trackAction);
-
-        if (i == 0) trackAction->setChecked(true);
-    }
 
     ranges.clear();
     ranges.setVideoLength(videoPlayer->duration());
@@ -233,6 +206,27 @@ void MainWindow::on_playerLoaded()
     syncRangesToText();
 
     videoPlayer->play(); // temp
+}
+
+void MainWindow::on_playerAudioTracksLoaded(QVariantList tracks)
+{
+    ui->menuAudioTracks->clear();
+    menuAudioTracksGroup = shared_ptr<QActionGroup>(new QActionGroup(this));
+    connect(menuAudioTracksGroup.get(), SIGNAL(triggered(QAction*)), SLOT(on_changeAudioTrackTriggered(QAction*)));
+
+    for (int i = 0; i < tracks.size(); i++)
+    {
+        QString trackName = tracks[i].toMap()["title"].toString();
+
+        QAction* trackAction = ui->menuAudioTracks->addAction(trackName);
+        trackAction->setCheckable(true);
+        trackAction->setProperty("trackIdx", i);
+        menuAudioTracksGroup->addAction(trackAction);
+
+        if (i == 0) trackAction->setChecked(true);
+
+        qDebug() << "Added audio track " << trackName;
+    }
 }
 
 void MainWindow::on_playerPositionChanged(qint64 position)
