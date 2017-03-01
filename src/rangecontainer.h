@@ -21,8 +21,8 @@ public:
     /// Adds a new range to the collection
     void add(qint64 start, qint64 end);
 
-    /// Performs a split on any range at the given position,
-    /// splitting one range into two
+    /// Performs a split on any range at the given position, splitting one range into two.
+    /// If there is nothing at the position, create a new range that fills the gap.
     void splitAt(qint64 position);
 
     /// Performs a left trim.
@@ -47,7 +47,14 @@ public:
 
 protected:
     /// Gets the idx of the region containing position, or the one before
+    /// The region before is determined by the one with the largest end position
+    /// which has a start position before position
     int getRegionAtOrBeforeIdx(qint64 position);
+
+    /// Gets the idx of the region containing position, or the one after.
+    /// The region after is determined by the one with lowest start position
+    /// with an end after the position
+    int getRegionAtOrAfterIdx(qint64 position);
 
 private:
     qint64 videoLength;
