@@ -40,10 +40,11 @@ qint64 timestampToMilliseconds(const QString time)
     int minutes = 0;
     double seconds = 0;
 
+    // validation check
     if (count > 3)
         return -1;
 
-    seconds = sections[count - 1].toFloat(&ok);
+    seconds = sections[count - 1].toDouble(&ok);
     if (!ok) allOk = false;
 
     if (count > 1)
