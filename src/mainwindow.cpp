@@ -163,7 +163,6 @@ void MainWindow::syncRangesToText()
         QString second = millisecondsToTimestamp(range.second, false);
         newText += first + "," + second + "\n";
     }
-    qDebug() << newText;
     ui->rangeInput->setPlainText(newText);
 }
 

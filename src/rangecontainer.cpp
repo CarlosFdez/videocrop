@@ -69,7 +69,7 @@ void RangeContainer::splitAt(qint64 position)
 
     if (beforeIdx < 0)
     {
-        qDebug() << "adding range to fill starting gap";
+        qDebug() << "split: adding range to fill starting gap";
 
         // we are on an empty space before any ranges, fill in the start
         // since it is not empty, we are guaranteed an after
@@ -78,7 +78,7 @@ void RangeContainer::splitAt(qint64 position)
     }
     else if (afterIdx < 0)
     {
-        qDebug() << "adding range to fill final gap";
+        qDebug() << "split: adding range to fill final gap";
 
         // we are on an empty space after all ranges, fill in the end
         int lastRangeEnd = ranges[beforeIdx].second;
@@ -86,14 +86,14 @@ void RangeContainer::splitAt(qint64 position)
     }
     else if (ranges[beforeIdx].first == position || ranges[beforeIdx].second == position)
     {
-        qDebug() << "skipping due to being on a border";
+        qDebug() << "split: skipping due to being on a border";
 
         // if on an edge of a range, do nothing
         return;
     }
     else if (position > ranges[beforeIdx].first && position < ranges[beforeIdx].second)
     {
-        qDebug() << "splitting an existing range";
+        qDebug() << "split: splitting an existing range";
 
         // if inside a range, split down the middle.
         pair<qint64, qint64> newRange(position, ranges[beforeIdx].second);
@@ -102,7 +102,7 @@ void RangeContainer::splitAt(qint64 position)
     }
     else
     {
-        qDebug() << "Adding range to fill gap between ranges";
+        qDebug() << "split: adding range to fill gap between ranges";
 
         // inside a gap between ranges
         qint64 startPosition = ranges[beforeIdx].second;
