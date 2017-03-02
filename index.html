@@ -16,13 +16,13 @@ layout: default
     Download the zip file, unzip to a folder, and double click the executable. There is no installer at this time.
 </p>
 <p>
-    If the application is missing MSVCP140.dll, install the <a href="https://www.microsoft.com/en-gb/download/details.aspx?id=48145">Visual C++ Redistributable for Visual Studio 2015</a>.
+    If the application is missing MSVCP140.dll, install the 64bit <a href="https://www.microsoft.com/en-gb/download/details.aspx?id=48145">Visual C++ Redistributable for Visual Studio 2015</a>.
 </p>
 
 
 <h2>Directions</h2>
 <p>
-    To open a file, drag a video file to the open window.
+    To open a file, drag a video file or click on File->Open in the menubar.
 </p>
 <img src="images/example.png"/>
 <p>
@@ -30,14 +30,22 @@ layout: default
     to update the ranges that will be exported (indicated by blue boxes), and click the export button.
     It can support almost any input format, but the export is only to mp4.
 </p>
+<p>
+    There are a few keybindings, but most of them only work if the text area on the right side does not have focus.
+    Click outside of the text area to remove focus.
+</p>
+<ul>
+    <li>Space - Toggle play/pause</li>
+    <li>Left and Right Arrows - Skip forwards and backwards</li>
+</ul>
 
 <h2>Missing Features</h2>
 <p>The application is not 100% complete and is missing the following:</p>
 <ul>
-    <li>A way to open videos without drag and drop</li>
     <li>An options menu for hotkeys and video skip length</li>
     <li>Cancelling the Export process (currently the button does nothing)</li>
     <li>Detecting keyframes and auto adjusting ranges to snap to keyframes</li>
+    <li>A lot of polish</li>
 </ul>
 
 <h2>How does it work?</h2>
