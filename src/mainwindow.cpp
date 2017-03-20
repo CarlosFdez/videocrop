@@ -25,6 +25,7 @@
 using namespace std;
 
 // todo: move somewhere else
+const QString APP_NAME = "VideoCrop";
 const qint64 SEEK_JUMP = 2000;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setAcceptDrops(true);
+    this->setWindowTitle(APP_NAME);
 
     videoOutput = make_shared<QtAV::VideoOutput>(this);
     if (!videoOutput->widget()) {
@@ -114,17 +116,6 @@ void MainWindow::dropEvent(QDropEvent *evt)
     }
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *evt)
-{
-    switch (evt->key())
-    {
-    // todo: add any unbinded key events here
-
-    default:
-        QMainWindow::keyPressEvent(evt);
-    }
-}
-
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     // Clicking anywhere else should remove focus from the rangeInput.
@@ -171,6 +162,8 @@ void MainWindow::closeVideo()
 
     ui->menuAudioTracks->clear();
     menuAudioTracksGroup.reset();
+
+    this->setWindowTitle(APP_NAME);
 }
 
 void MainWindow::skipAmount(qint64 skipAmount)
@@ -472,7 +465,7 @@ void MainWindow::on_changeAudioTrackTriggered(QAction *source)
 void MainWindow::on_menuAbout_triggered()
 {
     QMessageBox message(this);
-    message.setWindowTitle("About VideoCrop");
+    message.setWindowTitle("About " + APP_NAME);
     message.setTextFormat(Qt::RichText);
     message.setText("An open source cropping application application written by Carlos Fernandez. "
                     "Uses <a href=\"http://www.qtav.org/\">QtAV</a> and <a href=\"https://ffmpeg.org/\">FFmpeg</a>. "

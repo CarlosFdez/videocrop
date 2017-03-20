@@ -50,7 +50,6 @@ protected:
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *evt);
-    virtual void keyPressEvent(QKeyEvent *);
     virtual void mousePressEvent(QMouseEvent *event);
 
     /// Internal function to update the textfield based on the range collection
