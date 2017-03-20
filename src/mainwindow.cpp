@@ -68,18 +68,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
 
-    // initialize tooltips
-    // todo: once config is implemented, move to an setConfig() method
-    ui->togglePlayButton->setToolTip("Play/Pause (spacebar)");
-    ui->speedDecreaseButton->setToolTip("Slow Down");
-    ui->speedIncreaseButton->setToolTip("Speed Up");
-    ui->skipBackwardsButton->setToolTip("Skip Backwards (Left Arrow)");
-    ui->skipForwardsButton->setToolTip("Skip Forwards (Right Arrow)");
-    ui->trimLeftButton->setToolTip("Adjust Range Left Border");
-    ui->trimRightButton->setToolTip("Adjust Range Right Border");
-    ui->splitMiddleButton->setToolTip("Split Range");
-    ui->snapshotButton->setToolTip("Export Frame Image");
-
     // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer.get(), SIGNAL(internalAudioTracksChanged(QVariantList)), SLOT(on_playerAudioTracksLoaded(QVariantList)));
@@ -130,15 +118,7 @@ void MainWindow::keyPressEvent(QKeyEvent *evt)
 {
     switch (evt->key())
     {
-    case Qt::Key_Left:
-        // perform keyframe seek if default ever changes to accurate seek
-        skipAmount(-SEEK_JUMP);
-        break;
-
-    case Qt::Key_Right:
-        // perform keyframe seek if default ever changes to accurate seek
-        skipAmount(SEEK_JUMP);
-        break;
+    // todo: add any unbinded key events here
 
     default:
         QMainWindow::keyPressEvent(evt);
@@ -495,7 +475,7 @@ void MainWindow::on_menuAbout_triggered()
     message.setWindowTitle("About VideoCrop");
     message.setTextFormat(Qt::RichText);
     message.setText("An open source cropping application application written by Carlos Fernandez. "
-                    "Uses <a href=\"\http://www.qtav.org/\">QtAV</a> and <a href=\"https://ffmpeg.org/\">FFmpeg</a>. "
+                    "Uses <a href=\"http://www.qtav.org/\">QtAV</a> and <a href=\"https://ffmpeg.org/\">FFmpeg</a>. "
                     "Main site available <a href=\"https://carlosfdez.github.io/videocrop/\">here</a>.");
     message.exec();
 }

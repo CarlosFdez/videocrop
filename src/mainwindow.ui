@@ -112,6 +112,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Play/Pause</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -132,6 +135,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Slow Down</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -148,6 +154,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Speed Up</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -161,6 +170,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Skip Backwards</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -170,6 +182,9 @@
             <widget class="QToolButton" name="skipForwardsButton">
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>Skip Forwards</string>
              </property>
              <property name="text">
               <string/>
@@ -200,6 +215,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Adjust Range Left Border</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -220,6 +238,9 @@
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
              </property>
+             <property name="toolTip">
+              <string>Split Range</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -239,6 +260,9 @@
              </property>
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>Adjust Range Right Border</string>
              </property>
              <property name="text">
               <string/>
@@ -275,6 +299,9 @@
              </property>
              <property name="focusPolicy">
               <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>Export Frame Image</string>
              </property>
              <property name="text">
               <string/>
@@ -451,6 +478,14 @@
      </property>
     </widget>
     <addaction name="menuPlayPause"/>
+    <addaction name="menuSpeedDecrease"/>
+    <addaction name="menuSpeedIncrease"/>
+    <addaction name="menuSkipBackwards"/>
+    <addaction name="menuSkipForwards"/>
+    <addaction name="separator"/>
+    <addaction name="menuTrimLeft"/>
+    <addaction name="menuTrimRight"/>
+    <addaction name="menuSplit"/>
     <addaction name="separator"/>
     <addaction name="menuAudioTracks"/>
    </widget>
@@ -495,6 +530,62 @@
     <string>About</string>
    </property>
   </action>
+  <action name="menuTrimLeft">
+   <property name="text">
+    <string>Adjust Left Border</string>
+   </property>
+   <property name="shortcut">
+    <string>Q</string>
+   </property>
+  </action>
+  <action name="menuTrimRight">
+   <property name="text">
+    <string>Adjust Right Border</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
+   </property>
+  </action>
+  <action name="menuSplit">
+   <property name="text">
+    <string>Split</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
+   </property>
+  </action>
+  <action name="menuSpeedIncrease">
+   <property name="text">
+    <string>Speed Up</string>
+   </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
+  </action>
+  <action name="menuSpeedDecrease">
+   <property name="text">
+    <string>Slow Down</string>
+   </property>
+   <property name="shortcut">
+    <string>J</string>
+   </property>
+  </action>
+  <action name="menuSkipBackwards">
+   <property name="text">
+    <string>Skip Backwards</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="menuSkipForwards">
+   <property name="text">
+    <string>Skip Forwards</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../images.qrc"/>
@@ -512,6 +603,118 @@
     </hint>
     <hint type="destinationlabel">
      <x>31</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuTrimLeft</sender>
+   <signal>triggered()</signal>
+   <receiver>trimLeftButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuTrimRight</sender>
+   <signal>triggered()</signal>
+   <receiver>trimRightButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>328</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuSplit</sender>
+   <signal>triggered()</signal>
+   <receiver>splitMiddleButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuSpeedDecrease</sender>
+   <signal>triggered()</signal>
+   <receiver>speedDecreaseButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>69</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuSpeedIncrease</sender>
+   <signal>triggered()</signal>
+   <receiver>speedIncreaseButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuSkipBackwards</sender>
+   <signal>triggered()</signal>
+   <receiver>skipBackwardsButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>145</x>
+     <y>529</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuSkipForwards</sender>
+   <signal>triggered()</signal>
+   <receiver>skipForwardsButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>183</x>
      <y>529</y>
     </hint>
    </hints>
