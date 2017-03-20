@@ -1,6 +1,6 @@
 # Setup
 title:        VideoCrop
-tagline:      An application to crop and remux without losing quality
+tagline:      Crop videos without losing quality
 baseurl:      ""
 paginate:     1
 project-url:  https://github.com/CarlosFdez/videocrop

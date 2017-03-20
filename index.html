@@ -2,23 +2,21 @@
 layout: default
 ---
 <p>
-    An application used to crop videos on keyframes without transcoding to maintain quality and remux to mp4.
-    Its similar to one of <a href="http://avidemux.sourceforge.net/">Avidemux's</a> use cases,
-    but supports exporting multiple intervals simultaneously and comes with more video playback features.
+    A tool used to preview and crop video files before beginning video editing.
+    Exported videos are converted (remuxed) to mp4 and are not transcoded so no quality is lost.
+    Because of the mechanism by which it crops, the cuts are not exact and are usually larger.
+</p>
+<p>
+    Currently only supports Windows.
 </p>
 
+<h2>How to Run</h2>
 <p>
-    Because it only cuts on keyframes, the cuts are not exact. The exported file will (usually) be slightly larger than the specified range. Currently only supports Windows.
-</p>
-
-<h2>Installation</h2>
-<p>
-    Download the zip file, unzip to a folder, and double click the executable. There is no installer at this time.
+    Download the zip file, unzip to a folder, and double click the executable.
 </p>
 <p>
     If the application is missing MSVCP140.dll, install the 64bit <a href="https://www.microsoft.com/en-gb/download/details.aspx?id=48145">Visual C++ Redistributable for Visual Studio 2015</a>.
 </p>
-
 
 <h2>Directions</h2>
 <p>
@@ -32,12 +30,8 @@ layout: default
 </p>
 <p>
     There are a few keybindings, but most of them only work if the text area on the right side does not have focus.
-    Click outside of the text area to remove focus.
+    Click outside of the text area to remove focus. Keybindings are in the menubar.
 </p>
-<ul>
-    <li>Space - Toggle play/pause</li>
-    <li>Left and Right Arrows - Skip forwards and backwards</li>
-</ul>
 
 <h2>Missing Features</h2>
 <p>The application is not 100% complete and is missing the following:</p>
@@ -51,7 +45,7 @@ layout: default
 <h2>How does it work?</h2>
 <p>
     A video is composed of a container containing several streams, where each stream is a video or audio track.
-    The application replaces the container for a new one and copies a section of each stream.
+    This application copies a section of each video and audio stream into a new container.
     For most video codecs (notably h264) this segment is not exact, and will usually start before and end after the given range.
 </p>
 <p>
