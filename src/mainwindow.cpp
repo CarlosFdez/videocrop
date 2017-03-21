@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setAcceptDrops(true);
     this->setWindowTitle(APP_NAME);
+    this->updateControls(false);
 
     videoOutput = make_shared<QtAV::VideoOutput>(this);
     if (!videoOutput->widget()) {
@@ -85,6 +86,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::isLoaded()
+{
+    return videoPlayer->isLoaded();
 }
 
 bool MainWindow::fileExists()
@@ -163,7 +169,15 @@ void MainWindow::closeVideo()
     ui->menuAudioTracks->clear();
     menuAudioTracksGroup.reset();
 
+    updateControls(false);
+
     this->setWindowTitle(APP_NAME);
+}
+
+void MainWindow::updateControls(bool isLoaded)
+{
+    ui->rangeInput->setEnabled(isLoaded);
+    ui->exportButton->setEnabled(isLoaded);
 }
 
 void MainWindow::skipAmount(qint64 skipAmount)
@@ -177,6 +191,8 @@ void MainWindow::on_playerLoaded()
 {
     qDebug() << "video loaded";
     this->setWindowTitle(this->filename);
+
+    updateControls(true);
 
     seekbar->setVideoLength(videoPlayer->duration());
 
@@ -275,6 +291,8 @@ void MainWindow::on_rangeInput_textChanged()
 
 void MainWindow::on_speedDecreaseButton_clicked()
 {
+    if (!isLoaded()) return;
+
     qreal newSpeed = videoPlayer->speed() - 0.5;
     newSpeed = max(newSpeed, 1.0);
     videoPlayer->setSpeed(newSpeed);
@@ -282,6 +300,8 @@ void MainWindow::on_speedDecreaseButton_clicked()
 
 void MainWindow::on_speedIncreaseButton_clicked()
 {
+    if (!isLoaded()) return;
+
     qreal newSpeed = videoPlayer->speed() + 0.5;
     newSpeed = min(newSpeed, 6.0);
     videoPlayer->setSpeed(newSpeed);
@@ -289,18 +309,24 @@ void MainWindow::on_speedIncreaseButton_clicked()
 
 void MainWindow::on_trimLeftButton_clicked()
 {
+    if (!isLoaded()) return;
+
     ranges.trimLeftAt(videoPlayer->position());
     syncRangesToText();
 }
 
 void MainWindow::on_splitMiddleButton_clicked()
 {
+    if (!isLoaded()) return;
+
     ranges.splitAt(videoPlayer->position());
     syncRangesToText();
 }
 
 void MainWindow::on_trimRightButton_clicked()
 {
+    if (!isLoaded()) return;
+
     ranges.trimRightAt(videoPlayer->position());
     syncRangesToText();
 }

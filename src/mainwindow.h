@@ -32,8 +32,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    /// Returns true if a file is open and it exists
-    bool fileExists();
+    /// Returns true if the video is loaded
+    bool isLoaded();
 
     /// Returns a path to the location for any open/save dialogs
     QString getFileDialogLocation();
@@ -45,6 +45,13 @@ public:
     void closeVideo();
 
 protected:
+    /// Used to enable/disable controls for loaded/unloaded
+    /// (todo: may replace with state machine?)
+    void updateControls(bool isLoaded);
+
+    /// Returns true if a file is open and it exists
+    bool fileExists();
+
     /// Skips a certain amount of video. Can be positive or negative
     void skipAmount(qint64 skipAmount);
 
