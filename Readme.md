@@ -4,6 +4,9 @@ A gui application used to crop videos on keyframes without retranscoding to main
 
 This is my first real project with C++, so any help or advice would be appreciated. This was developed for Windows but does not use any Windows specific libraries, so with some work it could be cross-platform.
 
+**Website**: https://carlosfdez.github.io/videocrop/ \
+**Trello Board**: https://trello.com/b/ZucBimnC/videocrop
+
 ### Dependencies
 Uses QtAV for viewing the video and ffmpeg to crop and remux. Uses C++14 and Qt 5.7
 
@@ -21,9 +24,8 @@ Run a command prompt in the output folder. If qt is in your system path, run `wi
 If someone wishes to take this on, please let me know. I wrote this application to crop my own gameplay recordings to store before video editing, which means that I use it on the same platform I play games on (Windows). I have no personal need to run it on Linux, and I do not own a Mac.
 
 ### Todo
-* Make export cancel actually do something
+* Improve code (requires help from an actual C++ developer)
+* Improve deployment scheme, maybe learn how to create a build server
 * Fix debug mode, currently only works in release mode.
-* Use an actual architecture meant for GUIs. Could be MVC, could be a state machine, could be whatever.
-* Implement options
-* Figure out how to unit test C++ code (and guis)
-* Better deployment scheme (maybe a separate deployment script to copy the proper files?)
+* Figure out and implement unit test for C++ and Qt
+* The rest are in Trello
