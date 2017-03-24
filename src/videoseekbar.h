@@ -1,6 +1,7 @@
 #ifndef VIDEOSEEKBAR_H
 #define VIDEOSEEKBAR_H
 
+#include <QtAV>
 #include <QWidget>
 #include <QMouseEvent>
 #include <QPaintEvent>
@@ -19,11 +20,15 @@ public:
     void setVideoLength(qint64 milliseconds);
     void setRangeContainer(RangeContainer& ranges);
 
+    void bindTo(QtAV::AVPlayer *videoPlayer);
+
 protected:
     void mousePressEvent(QMouseEvent *evt);
     void mouseMoveEvent(QMouseEvent *evt);
     void mouseReleaseEvent(QMouseEvent *evt);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+
+    void performSeek(qint64 position);
 
 signals:
     /// fired when the postion changes for any reason.
@@ -39,7 +44,14 @@ signals:
     /// emitted when scrubbing stops
     void stopScrubbing();
 
+protected slots:
+    void on_playerLoaded();
+    void on_playerUnloaded();
+    void on_playerPositionChanged(qint64 position);
+
 private:
+    QtAV::AVPlayer *videoPlayer = nullptr;
+
     bool scrubbing = false;
     RangeContainer *ranges;
     qint64 position;

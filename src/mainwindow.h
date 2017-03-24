@@ -70,20 +70,13 @@ private slots:
     void on_seeked();
 
     void on_togglePlayButton_clicked();
-    void on_seekbar_seek(qint64 position);
-    void on_seekbar_startScrubbing();
-    void on_seekbar_stopScrubbing();
 
     void on_rangeInput_textChanged();
 
     void on_speedDecreaseButton_clicked();
-
     void on_speedIncreaseButton_clicked();
-
     void on_trimLeftButton_clicked();
-
     void on_splitMiddleButton_clicked();
-
     void on_trimRightButton_clicked();
 
     void on_exportButton_clicked();
@@ -104,7 +97,7 @@ private slots:
     void on_menuUnload_triggered();
     void on_menuExit_triggered();
 
-    /* player menu (note: some just trigger a toolbar button event) */
+    /* player menu (note: some are binded in the ui's signal/slots mechanism) */
     void on_changeAudioTrackTriggered(QAction* source);
 
     void on_menuAbout_triggered();

@@ -38,6 +38,13 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle(APP_NAME);
     this->updateControls(false);
 
+    // default icon states
+    ui->togglePlayButton->setIcon(QIcon(":/images/play.png"));
+    ui->speedDecreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
+    ui->speedIncreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+    ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
+    ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+
     videoOutput = make_shared<QtAV::VideoOutput>(this);
     if (!videoOutput->widget()) {
         QMessageBox::warning(0, QString::fromLatin1("QtAV error"), tr("Can not create video renderer"));
@@ -49,6 +56,12 @@ MainWindow::MainWindow(QWidget *parent) :
     videoPlayer->setRenderer(videoOutput.get());
     videoPlayer->setMediaEndAction(QtAV::MediaEndActionFlag::MediaEndAction_Pause);
 
+    // set video widget
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(videoOutput->widget());
+    ui->videoWidget->setLayout(layout);
+
     // set seek bar
     seekbar = new VideoSeekBar();
     QVBoxLayout *seekLayout = new QVBoxLayout();
@@ -56,19 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     seekLayout->addWidget(seekbar);
     ui->seekContainer->setLayout(seekLayout);
     seekbar->setRangeContainer(ranges);
-
-    // set video widget
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(videoOutput->widget());
-    ui->videoWidget->setLayout(layout);
-
-    // default icon states
-    ui->togglePlayButton->setIcon(QIcon(":/images/play.png"));
-    ui->speedDecreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-    ui->speedIncreaseButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-    ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    seekbar->bindTo(videoPlayer.get());
 
     // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
@@ -76,9 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
     connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
-    connect(seekbar, SIGNAL(positionSeeked(qint64)), SLOT(on_seekbar_seek(qint64)));
-    connect(seekbar, SIGNAL(startScrubbing()), SLOT(on_seekbar_startScrubbing()));
-    connect(seekbar, SIGNAL(stopScrubbing()), SLOT(on_seekbar_stopScrubbing()));
     connect(&exportProcessor, SIGNAL(progress(int)), SLOT(on_exportProgress(int)));
     connect(&exportProcessor, SIGNAL(finishedItem(int)), SLOT(on_exportedItem(int)));
     connect(&exportProcessor, SIGNAL(finishedAll()), SLOT(on_exportFinished()));
@@ -164,7 +162,6 @@ void MainWindow::closeVideo()
     videoPlayer->stop();
 
     ui->rangeInput->setPlainText("");
-    seekbar->setVideoLength(0);
     ui->progressLabel->setText("");
 
     ui->menuAudioTracks->clear();
@@ -194,8 +191,6 @@ void MainWindow::on_playerLoaded()
     this->setWindowTitle(this->filename);
 
     updateControls(true);
-
-    seekbar->setVideoLength(videoPlayer->duration());
 
     ranges.clear();
     ranges.setVideoLength(videoPlayer->duration());
@@ -236,8 +231,6 @@ void MainWindow::on_playerPositionChanged(qint64 position)
 
     QString label = QString("(x%1) %2 / %3").arg(speed).arg(positionTime, totalTime);
     ui->progressLabel->setText(label);
-
-    seekbar->setPosition(position);
 }
 
 void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
@@ -260,24 +253,6 @@ void MainWindow::on_togglePlayButton_clicked()
 {
     qDebug() << "clicked play button; was playing" << videoPlayer->isPlaying();
     videoPlayer->togglePause();
-}
-
-void MainWindow::on_seekbar_seek(qint64 position)
-{
-    videoPlayer->seek(position);
-}
-
-void MainWindow::on_seekbar_startScrubbing()
-{
-    qDebug() << "user started scrubbing";
-    videoPlayer->setSeekType(QtAV::SeekType::AnyFrameSeek);
-    videoPlayer->pause();
-}
-
-void MainWindow::on_seekbar_stopScrubbing()
-{
-    qDebug() << "user stopped scrubbing";
-    videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
 }
 
 void MainWindow::on_rangeInput_textChanged()

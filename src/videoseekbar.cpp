@@ -35,14 +35,27 @@ void VideoSeekBar::setRangeContainer(RangeContainer& ranges)
     this->ranges = &ranges;
 }
 
+void VideoSeekBar::bindTo(QtAV::AVPlayer *player)
+{
+    if (videoPlayer != nullptr)
+    {
+        qWarning() << "Unbinding currently doesn't exist";
+    }
+
+    videoPlayer = player;
+    connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
+    connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
+    connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_positionChanged(qint64)));
+
+}
+
 void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
 {
     if (this->videoLength > 0
             && evt->button() == Qt::MouseButton::LeftButton)
     {
         qint64 position = (evt->x() * 1.0 / this->width()) * videoLength;
-        setPosition(position);
-        emit positionSeeked(position);
+        this->performSeek(position);
     }
     QWidget::mousePressEvent(evt);
 }
@@ -53,12 +66,16 @@ void VideoSeekBar::mouseMoveEvent(QMouseEvent *evt)
             && evt->buttons() & Qt::MouseButton::LeftButton)
     {
         qint64 position = (evt->x() * 1.0 / this->width()) * videoLength;
-        setPosition(position);
-        emit positionSeeked(position);
+        this->performSeek(position);
 
-        if (!scrubbing)
+        if (videoPlayer && !scrubbing)
         {
             scrubbing = true;
+
+            // pause video, and attempt to improve its scrub performance
+            videoPlayer->setSeekType(QtAV::SeekType::AnyFrameSeek);
+            videoPlayer->pause();
+
             emit startScrubbing();
         }
     }
@@ -73,9 +90,13 @@ void VideoSeekBar::mouseReleaseEvent(QMouseEvent *evt)
     {
         // empty in case we want to add anything else
 
-        if (scrubbing)
+        if (videoPlayer && scrubbing)
         {
             scrubbing = false;
+
+            // restore video seek mechanism
+            videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
+
             emit stopScrubbing();
         }
     }
@@ -124,4 +145,29 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
         QRect line(lineDrawPosition - lineThickness / 2, 0, lineThickness, height);
         painter.fillRect(line, SEEK_LINE_COLOR);
     }
+}
+
+void VideoSeekBar::performSeek(qint64 position)
+{
+    this->setPosition(position);
+    if (videoPlayer)
+    {
+        videoPlayer->seek(position);
+    }
+    emit positionSeeked(position);
+}
+
+void VideoSeekBar::on_playerLoaded()
+{
+    this->setVideoLength(videoPlayer->duration());
+}
+
+void VideoSeekBar::on_playerUnloaded()
+{
+    this->setVideoLength(0);
+}
+
+void VideoSeekBar::on_playerPositionChanged(qint64 position)
+{
+    this->setPosition(position);
 }
