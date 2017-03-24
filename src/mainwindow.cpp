@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Initialize Video player widget
     videoPlayer = make_shared<QtAV::AVPlayer>();
     videoPlayer->setRenderer(videoOutput.get());
-    videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
     videoPlayer->setMediaEndAction(QtAV::MediaEndActionFlag::MediaEndAction_Pause);
 
     // set seek bar
@@ -78,6 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
     connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
     connect(seekbar, SIGNAL(positionSeeked(qint64)), SLOT(on_seekbar_seek(qint64)));
+    connect(seekbar, SIGNAL(startScrubbing()), SLOT(on_seekbar_startScrubbing()));
+    connect(seekbar, SIGNAL(stopScrubbing()), SLOT(on_seekbar_stopScrubbing()));
     connect(&exportProcessor, SIGNAL(progress(int)), SLOT(on_exportProgress(int)));
     connect(&exportProcessor, SIGNAL(finishedItem(int)), SLOT(on_exportedItem(int)));
     connect(&exportProcessor, SIGNAL(finishedAll()), SLOT(on_exportFinished()));
@@ -201,6 +202,7 @@ void MainWindow::on_playerLoaded()
     ranges.add(0, videoPlayer->duration());
     syncRangesToText();
 
+    videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
     videoPlayer->play(); // temp
 }
 
@@ -263,6 +265,19 @@ void MainWindow::on_togglePlayButton_clicked()
 void MainWindow::on_seekbar_seek(qint64 position)
 {
     videoPlayer->seek(position);
+}
+
+void MainWindow::on_seekbar_startScrubbing()
+{
+    qDebug() << "user started scrubbing";
+    videoPlayer->setSeekType(QtAV::SeekType::AnyFrameSeek);
+    videoPlayer->pause();
+}
+
+void MainWindow::on_seekbar_stopScrubbing()
+{
+    qDebug() << "user stopped scrubbing";
+    videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
 }
 
 void MainWindow::on_rangeInput_textChanged()

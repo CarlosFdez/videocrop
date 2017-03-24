@@ -37,7 +37,8 @@ void VideoSeekBar::setRangeContainer(RangeContainer& ranges)
 
 void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
 {
-    if (evt->button() == Qt::MouseButton::LeftButton)
+    if (this->videoLength > 0
+            && evt->button() == Qt::MouseButton::LeftButton)
     {
         qint64 position = (evt->x() * 1.0 / this->width()) * videoLength;
         setPosition(position);
@@ -48,13 +49,38 @@ void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
 
 void VideoSeekBar::mouseMoveEvent(QMouseEvent *evt)
 {
-    if (evt->buttons() && Qt::MouseButton::LeftButton)
+    if (this->videoLength > 0
+            && evt->buttons() & Qt::MouseButton::LeftButton)
     {
         qint64 position = (evt->x() * 1.0 / this->width()) * videoLength;
         setPosition(position);
         emit positionSeeked(position);
+
+        if (!scrubbing)
+        {
+            scrubbing = true;
+            emit startScrubbing();
+        }
     }
+
     QWidget::mouseMoveEvent(evt);
+}
+
+void VideoSeekBar::mouseReleaseEvent(QMouseEvent *evt)
+{
+    if (this->videoLength > 0
+            && evt->button() == Qt::MouseButton::LeftButton)
+    {
+        // empty in case we want to add anything else
+
+        if (scrubbing)
+        {
+            scrubbing = false;
+            emit stopScrubbing();
+        }
+    }
+
+    QWidget::mouseReleaseEvent(evt);
 }
 
 void VideoSeekBar::paintEvent(QPaintEvent *event)

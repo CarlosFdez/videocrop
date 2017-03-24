@@ -71,6 +71,8 @@ private slots:
 
     void on_togglePlayButton_clicked();
     void on_seekbar_seek(qint64 position);
+    void on_seekbar_startScrubbing();
+    void on_seekbar_stopScrubbing();
 
     void on_rangeInput_textChanged();
 
