@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QtDebug>
 
+#include <algorithm>
+
 // todo: define some other way (stylesheet?)
 const int RANGE_BORDER_WIDTH = 3;
 const QColor BASE_COLOR(130, 130, 130);
@@ -148,6 +150,10 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
 
 void VideoSeekBar::performSeek(qint64 position)
 {
+    // clamp to min/max
+    position = max((qint64)0, position);
+    position = min(this->videoLength, position);
+
     this->setPosition(position);
     if (videoPlayer)
     {
