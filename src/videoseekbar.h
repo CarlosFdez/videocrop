@@ -54,8 +54,8 @@ private:
 
     bool scrubbing = false;
     RangeContainer *ranges;
-    qint64 position;
-    qint64 videoLength;
+    qint64 position = 0;
+    qint64 videoLength = 0;
 };
 
 #endif // VIDEOSEEKBAR_H

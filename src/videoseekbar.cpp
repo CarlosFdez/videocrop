@@ -47,7 +47,7 @@ void VideoSeekBar::bindTo(QtAV::AVPlayer *player)
     videoPlayer = player;
     connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
-    connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_positionChanged(qint64)));
+    connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
 }
 
 void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
