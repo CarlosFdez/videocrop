@@ -62,19 +62,14 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(videoOutput->widget());
     ui->videoWidget->setLayout(layout);
 
-    // set seek bar
-    seekbar = new VideoSeekBar();
-    QVBoxLayout *seekLayout = new QVBoxLayout();
-    seekLayout->setContentsMargins(0, 0, 0, 0);
-    seekLayout->addWidget(seekbar);
-    ui->seekContainer->setLayout(seekLayout);
-    seekbar->setRangeContainer(ranges);
-    seekbar->bindTo(videoPlayer.get());
+    // bind ui elements
+    ui->seekbar->setRangeContainer(ranges);
+    ui->seekbar->bindTo(videoPlayer.get());
+    ui->positionLabel->bindTo(videoPlayer.get());
 
     // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer.get(), SIGNAL(internalAudioTracksChanged(QVariantList)), SLOT(on_playerAudioTracksLoaded(QVariantList)));
-    connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
     connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
     connect(&exportProcessor, SIGNAL(progress(int)), SLOT(on_exportProgress(int)));
@@ -162,7 +157,6 @@ void MainWindow::closeVideo()
     videoPlayer->stop();
 
     ui->rangeInput->setPlainText("");
-    ui->progressLabel->setText("");
 
     ui->menuAudioTracks->clear();
     menuAudioTracksGroup.reset();
@@ -222,17 +216,6 @@ void MainWindow::on_playerAudioTracksLoaded(QVariantList tracks)
     }
 }
 
-void MainWindow::on_playerPositionChanged(qint64 position)
-{
-    bool hasHours = testHasHours(videoPlayer->duration());
-    QString positionTime = millisecondsToTimestamp(position, hasHours);
-    QString totalTime = millisecondsToTimestamp(videoPlayer->duration(), hasHours);
-    qreal speed = videoPlayer->speed();
-
-    QString label = QString("(x%1) %2 / %3").arg(speed).arg(positionTime, totalTime);
-    ui->progressLabel->setText(label);
-}
-
 void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
 {
     QIcon playIcon;
@@ -276,7 +259,8 @@ void MainWindow::on_rangeInput_textChanged()
         ranges.add(first, second);
     }
 
-    seekbar->repaint();
+    // todo: move, perhaps do this when there is an event on ranges
+    ui->seekbar->repaint();
 }
 
 void MainWindow::on_speedDecreaseButton_clicked()

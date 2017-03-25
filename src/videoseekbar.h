@@ -15,7 +15,7 @@ class VideoSeekBar : public QWidget
     Q_OBJECT
 
 public:
-    VideoSeekBar();
+    explicit VideoSeekBar(QWidget *parent = 0);
     void setPosition(qint64 milliseconds);
     void setVideoLength(qint64 milliseconds);
     void setRangeContainer(RangeContainer& ranges);

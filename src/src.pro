@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     singlevideoprocessor.cpp \
     videoexportprocessor.cpp \
     rangecontainer.cpp \
-    exportdialog.cpp
+    exportdialog.cpp \
+    videopositionlabel.cpp
 
 HEADERS  += mainwindow.h \
     videoseekbar.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     singlevideoprocessor.h \
     videoexportprocessor.h \
     rangecontainer.h \
-    exportdialog.h
+    exportdialog.h \
+    videopositionlabel.h
 
 FORMS    += \
     mainwindow.ui

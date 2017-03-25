@@ -65,7 +65,6 @@ protected:
 private slots:
     void on_playerLoaded();
     void on_playerAudioTracksLoaded(QVariantList tracks);
-    void on_playerPositionChanged(qint64 position);
     void on_playerStateChanged(QtAV::AVPlayer::State state);
     void on_seeked();
 

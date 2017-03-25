@@ -11,7 +11,7 @@ const QColor RANGE_COLOR(60, 60, 255);
 const QColor RANGE_BORDER_COLOR(50, 50, 232);
 const QColor SEEK_LINE_COLOR(255, 0, 0);
 
-VideoSeekBar::VideoSeekBar()
+VideoSeekBar::VideoSeekBar(QWidget *parent) : QWidget(parent)
 {
     this->setAutoFillBackground(true);
     this->setMouseTracking(true);
@@ -46,7 +46,6 @@ void VideoSeekBar::bindTo(QtAV::AVPlayer *player)
     connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
     connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_positionChanged(qint64)));
-
 }
 
 void VideoSeekBar::mousePressEvent(QMouseEvent *evt)
