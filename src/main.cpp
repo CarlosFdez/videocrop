@@ -23,6 +23,7 @@ public:
     VideoCropApplication(int& argc, char** argv): QApplication(argc, argv) {}
     bool notify(QObject* receiver, QEvent* event)
     {
+        // todo: this doesn't seem to actually be catching errors, figure this out later
         bool done = true;
         try
         {
@@ -45,6 +46,12 @@ int main(int argc, char *argv[])
         VideoCropApplication a(argc, argv);
 
         MainWindow w;
+
+        if (argc > 1)
+        {
+            w.openFile(argv[argc-1]);
+        }
+
         w.show();
 
         try
