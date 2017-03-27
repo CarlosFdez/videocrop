@@ -128,10 +128,10 @@ void VideoSeekBar::paintEvent(QPaintEvent *event)
     QPen rangeBorderPen(RANGE_BORDER_COLOR, RANGE_BORDER_WIDTH,
                         Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
 
-    for (pair<qint64, qint64> p : *this->ranges)
+    for (Range p : *this->ranges)
     {
-        int start = (p.first * 1.0 / videoLength) * width;
-        int finish = (p.second * 1.0 / videoLength) * width;
+        int start = (p.start * 1.0 / videoLength) * width;
+        int finish = (p.end * 1.0 / videoLength) * width;
 
         QRectF rangeRect(start, gutterSize,
                          finish - start, this->height() - gutterSize);

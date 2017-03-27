@@ -54,10 +54,10 @@ void RangeInputArea::on_rangeChanged()
 
     this->property("plainText").toString();
     QString newText = "";
-    for (pair<qint64, qint64> range : *ranges)
+    for (Range range : *ranges)
     {
-        QString first = millisecondsToTimestamp(range.first, false);
-        QString second = millisecondsToTimestamp(range.second, false);
+        QString first = millisecondsToTimestamp(range.start, false);
+        QString second = millisecondsToTimestamp(range.end, false);
         newText += first + "," + second + "\n";
     }
 

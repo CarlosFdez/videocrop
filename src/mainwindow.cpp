@@ -304,9 +304,9 @@ void MainWindow::on_exportButton_clicked()
 
     exportProcessor.setInputFilename(this->filename);
     exportProcessor.clearRanges();
-    for (pair<qint64, qint64> range : ranges)
+    for (Range range : ranges)
     {
-        exportProcessor.addRange(range.first, range.second);
+        exportProcessor.addRange(range.start, range.end);
     }
 
     vector<QString> generatedFiles = exportProcessor.getFilenames(outputFilename);

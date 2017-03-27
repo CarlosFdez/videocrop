@@ -7,6 +7,20 @@
 
 using namespace std;
 
+struct Range
+{
+    qint64 start;
+    qint64 end;
+
+    Range() { }
+
+    Range(qint64 first, qint64 second)
+    {
+        this->start = first;
+        this->end = second;
+    }
+};
+
 /// Defines a class that contains export regions with operations that manipulate them.
 /// This class sends signals about updates
 class RangeContainer : public QObject
@@ -41,12 +55,12 @@ public:
     void trimRightAt(qint64 position);
 
     /// Returns the number of ranges in the collection
-    int size();
+    size_t size();
 
-    int max_size();
+    size_t max_size();
 
-    vector<pair<qint64, qint64>>::iterator begin();
-    vector<pair<qint64, qint64>>::iterator end();
+    vector<Range>::iterator begin();
+    vector<Range>::iterator end();
 
 signals:
     /// emitted when any type of change has been made
@@ -65,7 +79,7 @@ protected:
 
 private:
     qint64 videoLength;
-    vector<pair<qint64, qint64>> ranges;
+    vector<Range> ranges;
 };
 
 #endif // RANGECONTAINER_H
