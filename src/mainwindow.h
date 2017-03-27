@@ -35,8 +35,12 @@ public:
     /// Returns true if the video is loaded
     bool isLoaded();
 
-    /// Returns a path to the location for any open/save dialogs
-    QString getFileDialogLocation();
+    /// Returns a path to the location for any open dialogs
+    QString getFileDialogOpenLocation();
+
+    /// Returns a path to the location for export dialogs
+    /// This will be the open location by default, or the last export location
+    QString getFileDialogExportLocation();
 
     /// Programmatically opens a video file
     void openFile(const QString& filename);
@@ -104,12 +108,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    // widgets (memory managed by QT)
-    VideoSeekBar *seekbar;
-
     shared_ptr<QtAV::VideoOutput> videoOutput;
     shared_ptr<QtAV::AVPlayer> videoPlayer;
     qint64 seekPosition = -1;
+
+    QString lastExportDirectory = "";
 
     // information about the loaded video
     QString filename;

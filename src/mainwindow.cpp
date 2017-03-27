@@ -93,12 +93,20 @@ bool MainWindow::fileExists()
     return fileToExport.exists() || fileToExport.isFile();
 }
 
-QString MainWindow::getFileDialogLocation()
+QString MainWindow::getFileDialogOpenLocation()
 {
     if (!fileExists()) return "";
 
     QFileInfo fileToExport(this->filename);
     return fileToExport.dir().absolutePath();
+}
+
+QString MainWindow::getFileDialogExportLocation()
+{
+    if (!QFileInfo(lastExportDirectory).exists())
+        return getFileDialogOpenLocation();
+
+    return lastExportDirectory;
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -319,7 +327,7 @@ void MainWindow::on_exportButton_clicked()
     videoPlayer->pause();
 
     QString outputFilename = QFileDialog::getSaveFileName(
-                this, "Save File", getFileDialogLocation(),
+                this, "Save File", getFileDialogExportLocation(),
                 "Video Files (*.mp4)");
 
     if (outputFilename == "")
@@ -330,6 +338,9 @@ void MainWindow::on_exportButton_clicked()
 
     if (!outputFilename.toLower().endsWith(".mp4"))
         outputFilename += ".mp4";
+
+    // update last export location
+    lastExportDirectory = QFileInfo(outputFilename).dir().absolutePath();
 
     qDebug() << "output filename " << outputFilename;
 
@@ -399,7 +410,7 @@ void MainWindow::on_snapshotButton_clicked()
     videoPlayer->pause();
 
     QString outputFilename = QFileDialog::getSaveFileName(
-                this, "Save File", getFileDialogLocation(),
+                this, "Save File", getFileDialogOpenLocation(),
                 "PNG (*.png);;JPEG (*.jpeg)");
 
     if (outputFilename == "") return;
@@ -434,7 +445,7 @@ void MainWindow::on_menuOpen_triggered()
 {
     videoPlayer->pause();
     QString filename = QFileDialog::getOpenFileName(
-                this, "Open Video", getFileDialogLocation(),
+                this, "Open Video", getFileDialogOpenLocation(),
                 "Video Files (*.mp4 *.mkv *.avi);;All files (*)");
     if (filename == "") return;
 
