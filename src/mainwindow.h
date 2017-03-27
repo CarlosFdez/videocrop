@@ -63,9 +63,6 @@ protected:
     void dropEvent(QDropEvent *evt);
     virtual void mousePressEvent(QMouseEvent *event);
 
-    /// Internal function to update the textfield based on the range collection
-    virtual void syncRangesToText();
-
 private slots:
     void on_playerLoaded();
     void on_playerAudioTracksLoaded(QVariantList tracks);
@@ -73,14 +70,14 @@ private slots:
     void on_seeked();
 
     void on_togglePlayButton_clicked();
-
-    void on_rangeInput_textChanged();
-
     void on_speedDecreaseButton_clicked();
     void on_speedIncreaseButton_clicked();
     void on_trimLeftButton_clicked();
     void on_splitMiddleButton_clicked();
     void on_trimRightButton_clicked();
+    void on_snapshotButton_clicked();
+    void on_skipBackwardsButton_clicked();
+    void on_skipForwardsButton_clicked();
 
     void on_exportButton_clicked();
 
@@ -88,12 +85,6 @@ private slots:
     void on_exportedItem(int item);
     void on_exportFinished();
     void on_exportProgress(int progress);
-
-    void on_snapshotButton_clicked();
-
-    void on_skipBackwardsButton_clicked();
-
-    void on_skipForwardsButton_clicked();
 
     /* file menu */
     void on_menuOpen_triggered();

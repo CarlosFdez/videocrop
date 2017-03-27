@@ -15,11 +15,13 @@ void RangeContainer::setVideoLength(qint64 milliseconds)
 void RangeContainer::clear()
 {
     ranges.clear();
+    emit changed();
 }
 
 void RangeContainer::add(qint64 start, qint64 end)
 {
     ranges.push_back(pair<qint64, qint64>(start, end));
+    emit changed();
 }
 
 int RangeContainer::getRegionAtOrBeforeIdx(qint64 position)
@@ -61,6 +63,7 @@ void RangeContainer::splitAt(qint64 position)
     if (ranges.empty())
     {
         ranges.push_back(pair<qint64, qint64>(0, videoLength));
+        emit changed();
         return;
     }
 
@@ -75,6 +78,7 @@ void RangeContainer::splitAt(qint64 position)
         // since it is not empty, we are guaranteed an after
         int firstRangeStart = ranges[afterIdx].first;
         ranges.insert(ranges.begin(), pair<qint64, qint64>(0, firstRangeStart));
+        emit changed();
     }
     else if (afterIdx < 0)
     {
@@ -83,6 +87,7 @@ void RangeContainer::splitAt(qint64 position)
         // we are on an empty space after all ranges, fill in the end
         int lastRangeEnd = ranges[beforeIdx].second;
         ranges.insert(ranges.begin(), pair<qint64, qint64>(lastRangeEnd, videoLength));
+        emit changed();
     }
     else if (ranges[beforeIdx].first == position || ranges[beforeIdx].second == position)
     {
@@ -99,6 +104,7 @@ void RangeContainer::splitAt(qint64 position)
         pair<qint64, qint64> newRange(position, ranges[beforeIdx].second);
         ranges[beforeIdx].second = position;
         ranges.insert(ranges.begin() + beforeIdx + 1, newRange);
+        emit changed();
     }
     else
     {
@@ -110,6 +116,7 @@ void RangeContainer::splitAt(qint64 position)
 
         pair<qint64, qint64> newRange(startPosition, endPosition);
         ranges.insert(ranges.begin() + beforeIdx + 1, newRange);
+        emit changed();
     }
 }
 
@@ -118,6 +125,7 @@ void RangeContainer::trimLeftAt(qint64 position)
     if (ranges.empty())
     {
         ranges.push_back(pair<qint64, qint64>(position, videoLength));
+        emit changed();
         return;
     }
 
@@ -133,6 +141,8 @@ void RangeContainer::trimLeftAt(qint64 position)
         // pull range here or after to here
         ranges[idx].first = position;
     }
+
+    emit changed();
 }
 
 void RangeContainer::trimRightAt(qint64 position)
@@ -141,6 +151,7 @@ void RangeContainer::trimRightAt(qint64 position)
     if (ranges.empty())
     {
         ranges.insert(ranges.begin(), pair<qint64, qint64>(0, position));
+        emit changed();
         return;
     }
 
@@ -157,6 +168,8 @@ void RangeContainer::trimRightAt(qint64 position)
         // pull end to here
         ranges[idx].second = position;
     }
+
+    emit changed();
 }
 
 int RangeContainer::size()

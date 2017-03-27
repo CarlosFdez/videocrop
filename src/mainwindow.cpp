@@ -63,9 +63,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->videoWidget->setLayout(layout);
 
     // bind ui elements
-    ui->seekbar->setRangeContainer(ranges);
-    ui->seekbar->bindTo(videoPlayer.get());
-    ui->positionLabel->bindTo(videoPlayer.get());
+    ui->seekbar->bindRangeContainer(&ranges);
+    ui->seekbar->bindPlayer(videoPlayer.get());
+    ui->positionLabel->bindPlayer(videoPlayer.get());
+    ui->rangeInput->bindRangeContainer(&ranges);
 
     // wire up additional events
     connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
@@ -132,19 +133,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     QMainWindow::mousePressEvent(event);
 }
 
-void MainWindow::syncRangesToText()
-{
-    ui->rangeInput->property("plainText").toString();
-    QString newText = "";
-    for (pair<qint64, qint64> range : ranges)
-    {
-        QString first = millisecondsToTimestamp(range.first, false);
-        QString second = millisecondsToTimestamp(range.second, false);
-        newText += first + "," + second + "\n";
-    }
-    ui->rangeInput->setPlainText(newText);
-}
-
 void MainWindow::openFile(const QString& filename)
 {
     qDebug() << "opening " << filename;
@@ -164,10 +152,9 @@ void MainWindow::closeVideo()
     this->filename = QString();
     videoPlayer->stop();
 
-    ui->rangeInput->setPlainText("");
-
     ui->menuAudioTracks->clear();
     menuAudioTracksGroup.reset();
+    ranges.clear();
 
     updateControls(false);
 
@@ -197,7 +184,6 @@ void MainWindow::on_playerLoaded()
     ranges.clear();
     ranges.setVideoLength(videoPlayer->duration());
     ranges.add(0, videoPlayer->duration());
-    syncRangesToText();
 
     videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
     videoPlayer->play(); // temp
@@ -246,31 +232,6 @@ void MainWindow::on_togglePlayButton_clicked()
     videoPlayer->togglePause();
 }
 
-void MainWindow::on_rangeInput_textChanged()
-{
-    ranges.clear();
-
-    QString text = ui->rangeInput->property("plainText").toString();
-    QStringList lines = text.split('\n');
-    for (QString line : lines)
-    {
-        QStringList sections = line.split(',');
-        if (sections.count() != 2)
-            continue;
-
-        qint64 first = timestampToMilliseconds(sections[0].trimmed());
-        qint64 second = timestampToMilliseconds(sections[1].trimmed());
-
-        if (first < 0 || second < 0)
-            continue;
-
-        ranges.add(first, second);
-    }
-
-    // todo: move, perhaps do this when there is an event on ranges
-    ui->seekbar->repaint();
-}
-
 void MainWindow::on_speedDecreaseButton_clicked()
 {
     if (!isLoaded()) return;
@@ -294,7 +255,6 @@ void MainWindow::on_trimLeftButton_clicked()
     if (!isLoaded()) return;
 
     ranges.trimLeftAt(videoPlayer->position());
-    syncRangesToText();
 }
 
 void MainWindow::on_splitMiddleButton_clicked()
@@ -302,7 +262,6 @@ void MainWindow::on_splitMiddleButton_clicked()
     if (!isLoaded()) return;
 
     ranges.splitAt(videoPlayer->position());
-    syncRangesToText();
 }
 
 void MainWindow::on_trimRightButton_clicked()
@@ -310,7 +269,6 @@ void MainWindow::on_trimRightButton_clicked()
     if (!isLoaded()) return;
 
     ranges.trimRightAt(videoPlayer->position());
-    syncRangesToText();
 }
 
 void MainWindow::on_exportButton_clicked()

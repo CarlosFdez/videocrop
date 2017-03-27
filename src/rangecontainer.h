@@ -1,14 +1,17 @@
 #ifndef RANGECONTAINER_H
 #define RANGECONTAINER_H
 
+#include <QObject>
 #include <vector>
 #include <Qt>
 
 using namespace std;
 
 /// Defines a class that contains export regions with operations that manipulate them.
-class RangeContainer
+/// This class sends signals about updates
+class RangeContainer : public QObject
 {
+    Q_OBJECT
 public:
     RangeContainer();
 
@@ -44,6 +47,10 @@ public:
 
     vector<pair<qint64, qint64>>::iterator begin();
     vector<pair<qint64, qint64>>::iterator end();
+
+signals:
+    /// emitted when any type of change has been made
+    void changed();
 
 protected:
     /// Gets the idx of the region containing position, or the one before

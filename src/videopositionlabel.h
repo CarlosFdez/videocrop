@@ -11,7 +11,7 @@ class VideoPositionLabel : public QLabel
 public:
     explicit VideoPositionLabel(QWidget *parent = 0);
 
-    void bindTo(QtAV::AVPlayer *player);
+    void bindPlayer(QtAV::AVPlayer *player);
 
 protected slots:
     void on_playerLoaded();

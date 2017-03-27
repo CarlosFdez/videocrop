@@ -5,11 +5,10 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include <vector>
 #include <rangecontainer.h>
 
-using namespace std;
-
+/// Defines a  user element that manages the video progress bar
+/// and allows the user to seek a position or scrub the video.
 class VideoSeekBar : public QWidget
 {
     Q_OBJECT
@@ -18,9 +17,9 @@ public:
     explicit VideoSeekBar(QWidget *parent = 0);
     void setPosition(qint64 milliseconds);
     void setVideoLength(qint64 milliseconds);
-    void setRangeContainer(RangeContainer& ranges);
 
-    void bindTo(QtAV::AVPlayer *videoPlayer);
+    void bindRangeContainer(RangeContainer *ranges);
+    void bindPlayer(QtAV::AVPlayer *videoPlayer);
 
 protected:
     void mousePressEvent(QMouseEvent *evt);
@@ -48,12 +47,13 @@ protected slots:
     void on_playerLoaded();
     void on_playerUnloaded();
     void on_playerPositionChanged(qint64 position);
+    void on_rangeChanged();
 
 private:
     QtAV::AVPlayer *videoPlayer = nullptr;
+    RangeContainer *ranges = nullptr;
 
     bool scrubbing = false;
-    RangeContainer *ranges;
     qint64 position = 0;
     qint64 videoLength = 0;
 };

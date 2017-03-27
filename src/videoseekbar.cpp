@@ -32,19 +32,25 @@ void VideoSeekBar::setVideoLength(qint64 milliseconds)
     this->repaint();
 }
 
-void VideoSeekBar::setRangeContainer(RangeContainer& ranges)
+void VideoSeekBar::bindRangeContainer(RangeContainer *ranges)
 {
-    this->ranges = &ranges;
+    if (this->ranges != nullptr)
+    {
+        qWarning() << "Unbinding currently doesn't exist";
+    }
+
+    this->ranges = ranges;
+    connect(ranges, SIGNAL(changed()), SLOT(on_rangeChanged()));
 }
 
-void VideoSeekBar::bindTo(QtAV::AVPlayer *player)
+void VideoSeekBar::bindPlayer(QtAV::AVPlayer *player)
 {
     if (videoPlayer != nullptr)
     {
         qWarning() << "Unbinding currently doesn't exist";
     }
 
-    videoPlayer = player;
+    this->videoPlayer = player;
     connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
     connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
     connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
@@ -175,4 +181,9 @@ void VideoSeekBar::on_playerUnloaded()
 void VideoSeekBar::on_playerPositionChanged(qint64 position)
 {
     this->setPosition(position);
+}
+
+void VideoSeekBar::on_rangeChanged()
+{
+    this->repaint();
 }

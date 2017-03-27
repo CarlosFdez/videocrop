@@ -7,7 +7,7 @@ VideoPositionLabel::VideoPositionLabel(QWidget *parent) : QLabel(parent)
 {
 }
 
-void VideoPositionLabel::bindTo(QtAV::AVPlayer *player)
+void VideoPositionLabel::bindPlayer(QtAV::AVPlayer *player)
 {
     if (videoPlayer != nullptr)
     {
