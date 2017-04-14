@@ -155,9 +155,6 @@ void MainWindow::on_playerLoaded()
     ranges.clear();
     ranges.setVideoLength(ui->videoPlayer->duration());
     ranges.add(0, ui->videoPlayer->duration());
-
-    ui->videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
-    ui->videoPlayer->play(); // temp
 }
 
 void MainWindow::on_playerAudioTracksLoaded(QVariantList tracks)

@@ -40,8 +40,12 @@ public:
 
     void setAudioStream(int idx);
 
-    // todo: change how this is done
-    void setSeekType(QtAV::SeekType seekType);
+    void setScrubbing(bool scrubbing);
+
+protected:
+    /// Used to test if the state needs to be changed, and if it does,
+    /// perform the change and emit the event
+    void testStateChanged();
 
 signals:
     void loaded();
@@ -57,16 +61,16 @@ public slots:
 
 
 private slots:
+    void inner_loaded();
     void inner_stateChanged(QtAV::AVPlayer::State);
-    void inner_seeked();
-//    void inner_loaded();
-//    void inner_stopped();
-//    void inner_positionChanged(qint64);
-//    void inner_internalAudioTracksChanged(QVariantList);
+    void inner_seekFinished();
+    void inner_positionChanged(qint64);
 
 private:
     shared_ptr<QtAV::AVPlayer> videoPlayer;
     shared_ptr<QtAV::VideoOutput> videoOutput;
+
+    QtAV::AVPlayer::State state;
 
     qint64 seekPosition = -1;
 };

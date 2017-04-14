@@ -80,8 +80,7 @@ void VideoSeekBar::mouseMoveEvent(QMouseEvent *evt)
             scrubbing = true;
 
             // pause video, and attempt to improve its scrub performance
-            videoPlayer->setSeekType(QtAV::SeekType::AnyFrameSeek);
-            videoPlayer->pause();
+            videoPlayer->setScrubbing(true);
 
             emit startScrubbing();
         }
@@ -102,7 +101,7 @@ void VideoSeekBar::mouseReleaseEvent(QMouseEvent *evt)
             scrubbing = false;
 
             // restore video seek mechanism
-            videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
+            videoPlayer->setScrubbing(false);
 
             emit stopScrubbing();
         }

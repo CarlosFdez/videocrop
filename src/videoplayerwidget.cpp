@@ -14,6 +14,7 @@ VideoPlayerWidget::VideoPlayerWidget(QWidget *parent) : QWidget(parent)
     videoPlayer = make_shared<QtAV::AVPlayer>();
     videoPlayer->setRenderer(videoOutput.get());
     videoPlayer->setMediaEndAction(QtAV::MediaEndActionFlag::MediaEndAction_Pause);
+    videoPlayer->setSeekType(QtAV::SeekType::AccurateSeek);
 
     // set video widget
     QVBoxLayout* layout = new QVBoxLayout();
@@ -21,11 +22,11 @@ VideoPlayerWidget::VideoPlayerWidget(QWidget *parent) : QWidget(parent)
     layout->addWidget(videoOutput->widget());
     this->setLayout(layout);
 
-    connect(videoPlayer.get(), SIGNAL(loaded()), this, SIGNAL(loaded()));
     connect(videoPlayer.get(), SIGNAL(stopped()), this, SIGNAL(unloaded()));
-    connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), this, SIGNAL(positionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(internalAudioTracksChanged(QVariantList)), this, SIGNAL(audioTracksLoaded(QVariantList)));
 
+    connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(inner_loaded()));
+    connect(videoPlayer.get(), SIGNAL(positionChanged(qint64)), SLOT(inner_positionChanged(qint64)));
     connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(inner_stateChanged(QtAV::AVPlayer::State)));
     connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(inner_seekFinished()));
 }
@@ -46,17 +47,17 @@ void VideoPlayerWidget::unload()
 
 void VideoPlayerWidget::play()
 {
-    videoPlayer->play();
+    videoPlayer->pause(false);
 }
 
 void VideoPlayerWidget::pause()
 {
-    videoPlayer->pause();
+    videoPlayer->pause(true);
 }
 
 void VideoPlayerWidget::togglePause()
 {
-    videoPlayer->togglePause();
+    (this->isPaused()) ? this->play() : this->pause();
 }
 
 void VideoPlayerWidget::seek(qint64 position)
@@ -80,7 +81,9 @@ bool VideoPlayerWidget::isPlaying()
 {
     // There's a bug in QtAV where it is possible to be paused and playing.
     // If paused is ever true, we want to declare false
-    return !videoPlayer->isPaused() && videoPlayer->isPlaying();
+    if (isPaused())
+        return false;
+    return videoPlayer->isPlaying();
 }
 
 bool VideoPlayerWidget::isPaused()
@@ -116,18 +119,58 @@ void VideoPlayerWidget::setAudioStream(int idx)
     videoPlayer->seek(videoPlayer->position());
 }
 
-void VideoPlayerWidget::setSeekType(QtAV::SeekType seekType)
+void VideoPlayerWidget::setScrubbing(bool scrubbing)
 {
-    videoPlayer->setSeekType(seekType);
+    if (scrubbing)
+    {
+        videoPlayer->pause();
+    }
+
+    videoPlayer->setSeekType((scrubbing)
+                             ? QtAV::SeekType::KeyFrameSeek
+                             : QtAV::SeekType::AccurateSeek);
 }
 
-void VideoPlayerWidget::inner_stateChanged(QtAV::AVPlayer::State state)
+void VideoPlayerWidget::testStateChanged()
 {
-    emit stateChanged(state);
+    QtAV::AVPlayer::State newState = (isPaused())
+            ? QtAV::AVPlayer::State::PausedState
+            : QtAV::AVPlayer::State::PlayingState;
+
+    if (this->state != newState)
+    {
+        this->state = newState;
+        emit stateChanged(this->state);
+    }
 }
 
-void VideoPlayerWidget::inner_seeked()
+void VideoPlayerWidget::inner_loaded()
+{
+    setScrubbing(false);
+    emit loaded();
+
+    // player has a different definition in QtAV: the stream starts on play.
+    // QtAV calls resuming pause(false) instead of play()
+    // we start consuming the stream after its loaded
+    videoPlayer->play();
+}
+
+void VideoPlayerWidget::inner_stateChanged(QtAV::AVPlayer::State)
+{
+    testStateChanged();
+}
+
+void VideoPlayerWidget::inner_seekFinished()
 {
     this->seekPosition = -1;
     emit seekFinished();
+}
+
+void VideoPlayerWidget::inner_positionChanged(qint64 position)
+{
+    // there's a bug in QtAV stable where reaching the end of the video
+    // in end action pause does not trigger a state change, so we need
+    // to expose the state change ourselves if we have to.
+    testStateChanged();
+    emit positionChanged(position);
 }
