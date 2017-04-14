@@ -1,13 +1,14 @@
 #include "videopositionlabel.h"
 
 #include <QVBoxLayout>
+#include "videoplayerwidget.h"
 #include "util.h"
 
 VideoPositionLabel::VideoPositionLabel(QWidget *parent) : QLabel(parent)
 {
 }
 
-void VideoPositionLabel::bindPlayer(QtAV::AVPlayer *player)
+void VideoPositionLabel::bindPlayer(VideoPlayerWidget *player)
 {
     if (videoPlayer != nullptr)
     {
@@ -15,14 +16,8 @@ void VideoPositionLabel::bindPlayer(QtAV::AVPlayer *player)
     }
 
     videoPlayer = player;
-    connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
-    connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
+    connect(videoPlayer, SIGNAL(unloaded()), SLOT(on_playerUnloaded()));
     connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
-}
-
-void VideoPositionLabel::on_playerLoaded()
-{
-
 }
 
 void VideoPositionLabel::on_playerUnloaded()

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QtAV>
+#include <videoplayerwidget.h>
 
 class VideoPositionLabel : public QLabel
 {
@@ -11,15 +11,14 @@ class VideoPositionLabel : public QLabel
 public:
     explicit VideoPositionLabel(QWidget *parent = 0);
 
-    void bindPlayer(QtAV::AVPlayer *player);
+    void bindPlayer(VideoPlayerWidget *player);
 
 protected slots:
-    void on_playerLoaded();
     void on_playerUnloaded();
     void on_playerPositionChanged(qint64 position);
 
 private:
-    QtAV::AVPlayer *videoPlayer = nullptr;
+    VideoPlayerWidget *videoPlayer = nullptr;
 };
 
 #endif // VIDEOPOSITIONLABEL_H

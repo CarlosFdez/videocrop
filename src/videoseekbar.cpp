@@ -43,7 +43,7 @@ void VideoSeekBar::bindRangeContainer(RangeContainer *ranges)
     connect(ranges, SIGNAL(changed()), SLOT(on_rangeChanged()));
 }
 
-void VideoSeekBar::bindPlayer(QtAV::AVPlayer *player)
+void VideoSeekBar::bindPlayer(VideoPlayerWidget *player)
 {
     if (videoPlayer != nullptr)
     {
@@ -52,7 +52,7 @@ void VideoSeekBar::bindPlayer(QtAV::AVPlayer *player)
 
     this->videoPlayer = player;
     connect(videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
-    connect(videoPlayer, SIGNAL(stopped()), SLOT(on_playerUnloaded()));
+    connect(videoPlayer, SIGNAL(unloaded()), SLOT(on_playerUnloaded()));
     connect(videoPlayer, SIGNAL(positionChanged(qint64)), SLOT(on_playerPositionChanged(qint64)));
 }
 

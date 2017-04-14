@@ -8,7 +8,6 @@
 #include <QMouseEvent>
 #include <QActionGroup>
 #include <memory>
-#include <QtAV>
 
 #include <exportdialog.h>
 #include <videoseekbar.h>
@@ -56,9 +55,6 @@ protected:
     /// Returns true if a file is open and it exists
     bool fileExists();
 
-    /// Skips a certain amount of video. Can be positive or negative
-    void skipAmount(qint64 skipAmount);
-
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *evt);
     virtual void mousePressEvent(QMouseEvent *event);
@@ -67,7 +63,6 @@ private slots:
     void on_playerLoaded();
     void on_playerAudioTracksLoaded(QVariantList tracks);
     void on_playerStateChanged(QtAV::AVPlayer::State state);
-    void on_seeked();
 
     void on_togglePlayButton_clicked();
     void on_speedDecreaseButton_clicked();
@@ -98,10 +93,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
-    shared_ptr<QtAV::VideoOutput> videoOutput;
-    shared_ptr<QtAV::AVPlayer> videoPlayer;
-    qint64 seekPosition = -1;
 
     QString lastExportDirectory = "";
 

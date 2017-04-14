@@ -45,7 +45,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QWidget" name="videoWidget" native="true"/>
+       <widget class="VideoPlayerWidget" name="videoPlayer" native="true"/>
       </item>
       <item>
        <widget class="VideoSeekBar" name="seekbar" native="true">
@@ -616,6 +616,12 @@
    <class>RangeInputArea</class>
    <extends>QFrame</extends>
    <header>rangeinputarea.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VideoPlayerWidget</class>
+   <extends>QWidget</extends>
+   <header>videoplayerwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

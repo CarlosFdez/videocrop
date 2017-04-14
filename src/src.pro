@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     rangecontainer.cpp \
     exportdialog.cpp \
     videopositionlabel.cpp \
-    rangeinputarea.cpp
+    rangeinputarea.cpp \
+    videoplayerwidget.cpp
 
 HEADERS  += mainwindow.h \
     videoseekbar.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     rangecontainer.h \
     exportdialog.h \
     videopositionlabel.h \
-    rangeinputarea.h
+    rangeinputarea.h \
+    videoplayerwidget.h
 
 FORMS    += \
     mainwindow.ui

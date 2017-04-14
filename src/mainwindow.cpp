@@ -45,34 +45,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->skipBackwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->skipForwardsButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
 
-    videoOutput = make_shared<QtAV::VideoOutput>(this);
-    if (!videoOutput->widget()) {
-        QMessageBox::warning(0, QString::fromLatin1("QtAV error"), tr("Can not create video renderer"));
-        return;
-    }
-
-    // Initialize Video player widget
-    videoPlayer = make_shared<QtAV::AVPlayer>();
-    videoPlayer->setRenderer(videoOutput.get());
-    videoPlayer->setMediaEndAction(QtAV::MediaEndActionFlag::MediaEndAction_Pause);
-
-    // set video widget
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(videoOutput->widget());
-    ui->videoWidget->setLayout(layout);
-
     // bind ui elements
     ui->seekbar->bindRangeContainer(&ranges);
-    ui->seekbar->bindPlayer(videoPlayer.get());
-    ui->positionLabel->bindPlayer(videoPlayer.get());
+    ui->seekbar->bindPlayer(ui->videoPlayer);
+    ui->positionLabel->bindPlayer(ui->videoPlayer);
     ui->rangeInput->bindRangeContainer(&ranges);
 
     // wire up additional events
-    connect(videoPlayer.get(), SIGNAL(loaded()), SLOT(on_playerLoaded()));
-    connect(videoPlayer.get(), SIGNAL(internalAudioTracksChanged(QVariantList)), SLOT(on_playerAudioTracksLoaded(QVariantList)));
-    connect(videoPlayer.get(), SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
-    connect(videoPlayer.get(), SIGNAL(seekFinished(qint64)), SLOT(on_seeked()));
+    connect(ui->videoPlayer, SIGNAL(loaded()), SLOT(on_playerLoaded()));
+    connect(ui->videoPlayer, SIGNAL(audioTracksLoaded(QVariantList)), SLOT(on_playerAudioTracksLoaded(QVariantList)));
+    connect(ui->videoPlayer, SIGNAL(stateChanged(QtAV::AVPlayer::State)), SLOT(on_playerStateChanged(QtAV::AVPlayer::State)));
     connect(&exportProcessor, SIGNAL(progress(int)), SLOT(on_exportProgress(int)));
     connect(&exportProcessor, SIGNAL(finishedItem(int)), SLOT(on_exportedItem(int)));
     connect(&exportProcessor, SIGNAL(finishedAll()), SLOT(on_exportFinished()));
@@ -85,7 +67,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::isLoaded()
 {
-    return videoPlayer->isLoaded();
+    return ui->videoPlayer->isLoaded();
 }
 
 bool MainWindow::fileExists()
@@ -138,11 +120,7 @@ void MainWindow::openFile(const QString& filename)
     qDebug() << "opening " << filename;
     this->filename = filename;
 
-    if (videoPlayer->isPlaying())
-        videoPlayer->stop();
-
-    videoPlayer->setFile(filename);
-    videoPlayer->load();
+    ui->videoPlayer->load(filename);
 
     // once the video is loaded, an event is fired and loading continues
 }
@@ -150,7 +128,7 @@ void MainWindow::openFile(const QString& filename)
 void MainWindow::closeVideo()
 {
     this->filename = QString();
-    videoPlayer->stop();
+    ui->videoPlayer->unload();
 
     ui->menuAudioTracks->clear();
     menuAudioTracksGroup.reset();
@@ -167,13 +145,6 @@ void MainWindow::updateControls(bool isLoaded)
     ui->exportButton->setEnabled(isLoaded);
 }
 
-void MainWindow::skipAmount(qint64 skipAmount)
-{
-    qint64 position = (seekPosition > -1) ? seekPosition: videoPlayer->position();
-    seekPosition = position + skipAmount;
-    videoPlayer->seek(seekPosition);
-}
-
 void MainWindow::on_playerLoaded()
 {
     qDebug() << "video loaded";
@@ -182,11 +153,11 @@ void MainWindow::on_playerLoaded()
     updateControls(true);
 
     ranges.clear();
-    ranges.setVideoLength(videoPlayer->duration());
-    ranges.add(0, videoPlayer->duration());
+    ranges.setVideoLength(ui->videoPlayer->duration());
+    ranges.add(0, ui->videoPlayer->duration());
 
-    videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
-    videoPlayer->play(); // temp
+    ui->videoPlayer->setSeekType(QtAV::SeekType::KeyFrameSeek);
+    ui->videoPlayer->play(); // temp
 }
 
 void MainWindow::on_playerAudioTracksLoaded(QVariantList tracks)
@@ -221,54 +192,49 @@ void MainWindow::on_playerStateChanged(QtAV::AVPlayer::State state)
     ui->togglePlayButton->setIcon(playIcon);
 }
 
-void MainWindow::on_seeked()
-{
-    seekPosition = -1;
-}
-
 void MainWindow::on_togglePlayButton_clicked()
 {
-    qDebug() << "clicked play button; was playing" << videoPlayer->isPlaying();
-    videoPlayer->togglePause();
+    qDebug() << "clicked play button; was playing" << ui->videoPlayer->isPlaying();
+    ui->videoPlayer->togglePause();
 }
 
 void MainWindow::on_speedDecreaseButton_clicked()
 {
     if (!isLoaded()) return;
 
-    qreal newSpeed = videoPlayer->speed() - 0.5;
+    qreal newSpeed = ui->videoPlayer->speed() - 0.5;
     newSpeed = max(newSpeed, 1.0);
-    videoPlayer->setSpeed(newSpeed);
+    ui->videoPlayer->setSpeed(newSpeed);
 }
 
 void MainWindow::on_speedIncreaseButton_clicked()
 {
     if (!isLoaded()) return;
 
-    qreal newSpeed = videoPlayer->speed() + 0.5;
+    qreal newSpeed = ui->videoPlayer->speed() + 0.5;
     newSpeed = min(newSpeed, 6.0);
-    videoPlayer->setSpeed(newSpeed);
+    ui->videoPlayer->setSpeed(newSpeed);
 }
 
 void MainWindow::on_trimLeftButton_clicked()
 {
     if (!isLoaded()) return;
 
-    ranges.trimLeftAt(videoPlayer->position());
+    ranges.trimLeftAt(ui->videoPlayer->position());
 }
 
 void MainWindow::on_splitMiddleButton_clicked()
 {
     if (!isLoaded()) return;
 
-    ranges.splitAt(videoPlayer->position());
+    ranges.splitAt(ui->videoPlayer->position());
 }
 
 void MainWindow::on_trimRightButton_clicked()
 {
     if (!isLoaded()) return;
 
-    ranges.trimRightAt(videoPlayer->position());
+    ranges.trimRightAt(ui->videoPlayer->position());
 }
 
 void MainWindow::on_exportButton_clicked()
@@ -282,7 +248,7 @@ void MainWindow::on_exportButton_clicked()
         return;
     }
 
-    videoPlayer->pause();
+    ui->videoPlayer->pause();
 
     QString outputFilename = QFileDialog::getSaveFileName(
                 this, "Save File", getFileDialogExportLocation(),
@@ -365,7 +331,7 @@ void MainWindow::on_snapshotButton_clicked()
         return;
     }
 
-    videoPlayer->pause();
+    ui->videoPlayer->pause();
 
     QString outputFilename = QFileDialog::getSaveFileName(
                 this, "Save File", getFileDialogOpenLocation(),
@@ -373,7 +339,7 @@ void MainWindow::on_snapshotButton_clicked()
 
     if (outputFilename == "") return;
 
-    qint64 position = videoPlayer->position();
+    qint64 position = ui->videoPlayer->position();
 
     if (exportVideoFrame(this->filename, outputFilename, position))
     {
@@ -391,17 +357,17 @@ void MainWindow::on_snapshotButton_clicked()
 
 void MainWindow::on_skipBackwardsButton_clicked()
 {
-    skipAmount(-SEEK_JUMP);
+    ui->videoPlayer->skipAmount(-SEEK_JUMP);
 }
 
 void MainWindow::on_skipForwardsButton_clicked()
 {
-    skipAmount(SEEK_JUMP);
+    ui->videoPlayer->skipAmount(SEEK_JUMP);
 }
 
 void MainWindow::on_menuOpen_triggered()
 {
-    videoPlayer->pause();
+    ui->videoPlayer->pause();
     QString filename = QFileDialog::getOpenFileName(
                 this, "Open Video", getFileDialogOpenLocation(),
                 "Video Files (*.mp4 *.mkv *.avi);;All files (*)");
@@ -425,10 +391,7 @@ void MainWindow::on_changeAudioTrackTriggered(QAction *source)
 {
     int trackIdx = source->property("trackIdx").toInt();
     qDebug() << "Changing to track " << trackIdx;
-    this->videoPlayer->setAudioStream(trackIdx);
-
-    // workaround for a video freeze bug
-    this->videoPlayer->seek(this->videoPlayer->position());
+    ui->videoPlayer->setAudioStream(trackIdx);
 }
 
 void MainWindow::on_menuAbout_triggered()
