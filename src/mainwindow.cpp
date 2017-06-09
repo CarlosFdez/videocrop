@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <iostream>
@@ -277,9 +278,8 @@ void MainWindow::on_exportButton_clicked()
 
     if (existingFiles.size() > 0)
     {
-        QMessageBox message;
-        message.setText("This will override an existing file");
-        message.exec();
+        QMessageBox::about(this, "Invalid",
+                           "This would override an existing file, which is not supported at this time");
         return;
     }
 
@@ -305,12 +305,10 @@ void MainWindow::on_exportedItem(int itemIdx)
 
 void MainWindow::on_exportFinished()
 {
-    QMessageBox msgBox;
-    msgBox.setText("Export complete");
-
     qDebug() << "Export complete" << endl;
     exportDialog->close();
-    msgBox.exec();
+
+    QMessageBox::about(this, "", "Export complete");
 }
 
 void MainWindow::on_exportProgress(int progress)
@@ -322,9 +320,7 @@ void MainWindow::on_snapshotButton_clicked()
 {
     if (!this->fileExists())
     {
-        QMessageBox message;
-        message.setText("Source file does not exist");
-        message.exec();
+        QMessageBox::about(this, "", "Source file does not exist");
         return;
     }
 
@@ -340,15 +336,11 @@ void MainWindow::on_snapshotButton_clicked()
 
     if (exportVideoFrame(this->filename, outputFilename, position))
     {
-        QMessageBox message;
-        message.setText("Finished");
-        message.exec();
+        QMessageBox::about(this, "", "Snapshot saved");
     }
     else
     {
-        QMessageBox message;
-        message.setText("Write failed");
-        message.exec();
+        QMessageBox::about(this, "", "Snapshot save failed");
     }
 }
 
